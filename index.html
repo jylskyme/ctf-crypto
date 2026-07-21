@@ -466,6 +466,172 @@ http.request.method == "GET"
 tcp.stream eq 0
 dns</pre></div></div></div>
 
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">📏</span><div class="sc-info"><div class="sc-title">RSA Wiener's Attack</div><div class="sc-desc">e 很大（接近 n 位数），d 很小时</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from Crypto.Util.number import *
+import gmpy2
+
+def continued_fraction(n, d):
+    cf = []
+    while d:
+        cf.append(n // d)
+        n, d = d, n % d
+    return cf
+
+def convergents(cf):
+    convs = []
+    h_prev, h_curr = 0, 1
+    k_prev, k_curr = 1, 0
+    for a in cf:
+        h_prev, h_curr = h_curr, a * h_curr + h_prev
+        k_prev, k_curr = k_curr, a * k_curr + k_prev
+        convs.append((h_curr, k_curr))
+    return convs
+
+n, e, c = ...  # 填入
+cf = continued_fraction(e, n)
+for k, d in convergents(cf):
+    if k == 0: continue
+    if (e * d - 1) % k != 0: continue
+    phi = (e * d - 1) // k
+    # 验证: 解 x^2-(n-phi+1)x+n=0
+    b = n - phi + 1
+    disc = b*b - 4*n
+    if disc > 0 and gmpy2.is_square(disc):
+        print(long_to_bytes(pow(c, d, n)))
+        break</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🔨</span><div class="sc-info"><div class="sc-title">RSA Fermat 分解</div><div class="sc-desc">|p - q| 很小时快速分解 n</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>import gmpy2
+from Crypto.Util.number import *
+
+n, e, c = ...  # 填入
+
+def fermat(n):
+    a = gmpy2.isqrt(n) + 1
+    while True:
+        b2 = a*a - n
+        if gmpy2.is_square(b2):
+            b = gmpy2.isqrt(b2)
+            return (a + b, a - b)
+        a += 1
+
+p, q = fermat(n)
+phi = (p-1)*(q-1)
+d = gmpy2.invert(e, phi)
+print(long_to_bytes(pow(c, d, n)))</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🧮</span><div class="sc-info"><div class="sc-title">Coppersmith 已知高位</div><div class="sc-desc">SageMath：已知明文/p的高位比特</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre># SageMath 脚本 (.sage)
+# 已知 p 的高位，求完整 p
+n = 0x...  # 填入 n
+p_high = 0x...  # 已知 p 的高位
+bits_unknown = 256  # 未知低位比特数
+
+PR.&lt;x&gt; = PolynomialRing(Zmod(n))
+f = p_high + x  # p = p_high + x
+f = f.monic()
+roots = f.small_roots(X=2^bits_unknown, beta=0.4)
+if roots:
+    p = int(p_high + roots[0])
+    q = n // p
+    print("p =", p)
+    print("q =", q)
+
+# 已知明文高位求完整明文
+# f = m_high + x
+# roots = f.small_roots(X=2^unknown_bits, beta=1.0)</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🔷</span><div class="sc-info"><div class="sc-title">格攻击 LLL 模板</div><div class="sc-desc">SageMath：构造格 + LLL 约化</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre># SageMath 脚本 (.sage)
+# 通用格构造模板（以 LCG 预测为例）
+# 已知 LCG: s_{i+1} = a*s_i + b mod m 的部分输出
+
+m = 0x...  # 模数
+a, b = ...  # 参数
+# 构造格矩阵
+M = Matrix(ZZ, [
+    [m, 0, 0],
+    [a, 1, 0],
+    [a^2, a, 1]
+])
+L = M.LLL()  # LLL 约化
+# 最短向量即为所求
+print(L[0])
+
+# HNP (Hidden Number Problem) 模板
+# 已知多组 (t_i, u_i) 满足 u_i = k*t_i + a_i mod p, |a_i| < B
+# 构造 (n+1) 维格，LLL 后提取私钥</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🔒</span><div class="sc-info"><div class="sc-title">AES-CBC Padding Oracle / Bit Flipping</div><div class="sc-desc">利用解密oracle或篡改明文</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from pwn import *
+# === Padding Oracle: 逐字节爆破明文 ===
+# 前提: 服务器会告诉你 padding 是否正确
+def oracle(ct):  # 返回 True/False
+    p = remote('host', 1234)
+    p.send(ct)
+    resp = p.recv()
+    p.close()
+    return b'padding' not in resp  # 根据题目调整
+
+block_size = 16
+ct = bytes.fromhex('...')  # 密文
+prev = ct[:16]  # 前一个块
+curr = ct[16:32]  # 当前块
+plain = b''
+for i in range(1, block_size + 1):
+    pad = i
+    crafted = bytearray(16)
+    for j in range(1, i):
+        crafted[16-j] = plain[-j+16] ^ pad if j > 1 else plain[16-1] ^ pad
+    # 简化: 用已知中间值反推
+    for guess in range(256):
+        crafted[16-i] = guess
+        test_ct = bytes(crafted) + curr
+        if oracle(test_ct):
+            mid = guess ^ pad
+            plain_byte = mid ^ prev[16-i]
+            plain = bytes([plain_byte]) + plain
+            break
+print(plain)
+
+# === Bit Flipping: 篡改明文 ===
+# 修改 ct[i] 的某位 → 明文[i+16]对应位翻转
+ct = bytearray(ct)
+ct[15] ^= ord('a') ^ ord('b')  # 把明文第16字节 a→b</pre></div></div></div>
+
+<div class="script-card"><div class="script-head" onclick="this.parentElement.classList.toggle('open')"><span class="sc-icon">🧠</span><div class="sc-info"><div class="sc-title">z3 约束求解（逆向通用）</div><div class="sc-desc">把校验逻辑转成约束，自动求flag</div></div><span class="sc-toggle">▶</span></div>
+<div class="script-body"><div class="code-block"><button class="copy-btn" onclick="copyCode(this)">复制</button><pre>from z3 import *
+
+# 假设 flag 格式: flag{xxxx}，长度已知
+flag_len = 20
+chars = [BitVec(f'c{i}', 8) for i in range(flag_len)]
+s = Solver()
+
+# 约束: 可打印字符
+for c in chars:
+    s.add(c >= 32, c <= 126)
+
+# 约束: 已知格式
+s.add(chars[0] == ord('f'))
+s.add(chars[1] == ord('l'))
+s.add(chars[2] == ord('a'))
+s.add(chars[3] == ord('g'))
+s.add(chars[4] == ord('{'))
+s.add(chars[flag_len-1] == ord('}'))
+
+# 约束: 从逆向中还原的校验逻辑（举例）
+# 例如: (c[5] ^ c[6]) == 0x1a
+s.add((chars[5] ^ chars[6]) == 0x1a)
+s.add((chars[7] + chars[8]) % 256 == 0x9f)
+# ... 把 IDA 里看到的条件逐条翻译成 z3 约束
+
+if s.check() == sat:
+    m = s.model()
+    flag = ''.join(chr(m[c].as_long()) for c in chars)
+    print(flag)
+else:
+    print("无解，检查约束")</pre></div></div></div>
+
 </div>
 </div>
 
