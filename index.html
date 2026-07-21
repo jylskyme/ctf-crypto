@@ -94,15 +94,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .learn-card p{font-size:13px;color:var(--text2);line-height:1.7}
 .learn-card code{background:var(--card2);padding:1px 5px;border-radius:3px;font-size:12px;color:#74b9ff}
 .formula-box{background:var(--card2);border-radius:8px;padding:12px;margin:10px 0;font-family:'Courier New',monospace;font-size:12px;color:#dfe6e9;overflow-x:auto;white-space:pre-wrap;line-height:1.6}
-.flashcard{perspective:1000px;height:220px;margin:16px 0;cursor:pointer}
+.flashcard{perspective:1000px;height:340px;margin:16px 0;cursor:pointer}
 .flashcard-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
 .flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
 .flashcard-front,.flashcard-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
 .flashcard-front{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border)}
-.flashcard-back{background:linear-gradient(135deg,#1a1a3e,#0d2137);border:1px solid var(--primary);transform:rotateY(180deg)}
+.flashcard-back{background:linear-gradient(135deg,#1a1a3e,#0d2137);border:1px solid var(--primary);transform:rotateY(180deg);justify-content:flex-start;align-items:stretch;text-align:left;overflow-y:auto}
 .flashcard-front .fc-q{font-size:16px;font-weight:600;line-height:1.5}
 .flashcard-front .fc-hint{font-size:11px;color:var(--text2);margin-top:12px}
-.flashcard-back .fc-a{font-size:13px;line-height:1.7;color:var(--primary-light)}
+.flashcard-back .fc-a{font-size:12.5px;line-height:1.8;color:var(--primary-light)}
 .fc-nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
 .fc-nav button{padding:10px 20px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;cursor:pointer}
 .fc-nav button:active{background:var(--border)}
@@ -1173,56 +1173,56 @@ lattice:[
 };
 
 const flashcards=[
-{q:"SQL注入分类？",a:"按注入点: GET/POST/Cookie/Header\n按类型: Union/布尔盲注/时间盲注/报错/堆叠\n按数据: 数字型/字符型\n绕过: 大小写/双写/注释/编码/内联"},
-{q:"XSS三种类型？",a:"反射型: URL参数,需诱导点击\n存储型: 入库,所有访问者中招\nDOM型: 前端JS处理,不经服务器\n防御: 输出编码+CSP+HttpOnly"},
-{q:"文件上传绕过？",a:"后缀: .php5/.phtml/.phar\nMIME: 改Content-Type\n内容: 图片马+文件包含\n解析: .php.jpg(Apache)\n00截断: PHP<5.3.4"},
-{q:"SSRF利用？",a:"伪协议: file:// gopher:// dict://\n内网: 127.0.0.1 10.x 172.16-31 192.168\n绕过: @ [::] 短网址 DNS重绑定\n302跳转绕过白名单"},
-{q:"ROP链构造？",a:"1.checksec看保护\n2.找gadget: ROPgadget --binary x\n3.布局: padding+pop rdi;ret+addr+call\n4.ret2libc: 泄露puts→算基址→system\n5.约束: 栈对齐(mov rsp,x)"},
-{q:"格式化字符串？",a:"泄露: %p.%p.%p 或 %7$p\n任意写: %n写入已输出字节数\n改GOT: printf@GOT→system\n偏移: AAAA%7$n (地址在栈第7位)\nhh/n/ll控制写入大小"},
-{q:"堆利用概览？",a:"fastbin: 单链表,改fd分配任意\ntcache: 2.26+,无检查,poisoning\nunsorted: 双向,unlink\nUAF: free后重用,改vtable\noff-by-one: 改size/fd\nhouse系列: force/orange/spirit"},
-{q:"逆向分析流程？",a:"1.file/strings初步\n2.checksec(ELF)/PEiD(PE)\n3.IDA F5看伪代码\n4.找main/入口/验证函数\n5.分析算法(加密/编码)\n6.z3/angr求解\n7.动态gdb/x64dbg验证"},
-{q:"常见加密识别？",a:"MD5: 32hex\nSHA1: 40hex\nBase64: A-Za-z0-9+/=\nAES: 16字节倍数\nRC4: 256字节S盒\nTEA: 0x9e3779b9\nRSA: 大整数n,e,c"},
-{q:"Misc文件头？",a:"PNG: 89 50 4E 47\nJPEG: FF D8 FF\nGIF: 47 49 46\nZIP: 50 4B 03 04\nPDF: 25 50 44 46\nELF: 7F 45 4C 46\nPE: 4D 5A (MZ)"},
-{q:"RSA中φ(n)怎么算？",a:"n=p×q: φ=(p-1)(q-1)\n多素数: φ=∏(pi-1)\np^k: φ=p^k-p^(k-1)"},
-{q:"共模攻击？",a:"同m同n不同e, gcd(e1,e2)=1\ns1e1+s2e2=1\nm=c1^s1·c2^s2 mod n\ns负→先求逆元"},
-{q:"Wiener信号与方法？",a:"e位数≈n → d可能小\ne/n连分数展开\n逐收敛子试k/d\n验证解密"},
-{q:"Padding Oracle？",a:"服务器区分padding错误\nCBC从最后块逐字节\n改C[n-1]使padding合法\nI=D(C[n]), P=I⊕C[n-1]"},
-{q:"长度扩展？",a:"H(secret||msg)已知\nMD结构(MD5/SHA1)\n知secret长度(可爆)\nhash_extender\nSHA-3/HMAC免疫"},
-{q:"ECB攻击？",a:"相同块→相同密文\nByte-at-a-Time:\n调前缀使目标落块尾\n暴力256次比对"},
-{q:"CTR nonce重用？",a:"c1⊕c2=m1⊕m2\n知一个明文→恢复另一个\nGCM重用→伪造tag\n永不重用！"},
-{q:"ECDSA k重用？",a:"s1=k⁻¹(z1+rd)\ns2=k⁻¹(z2+rd)\nk=(z1-z2)/(s1-s2)\nd=(s1k-z1)/r"},
-{q:"Fermat分解？",a:"|p-q|小\nn=a²-b²\na=⌈√n⌉递增\nb=√(a²-n)\np=a-b, q=a+b"},
-{q:"Coppersmith？",a:"已知明文高/低位\nSageMath:\nf=x+known\nf=f.change_ring(Zmod(n))\nf.small_roots(X=2^bits)"},
-{q:"维吉尼亚破解？",a:"1.Kasiski/IC求长度\n2.按长度分组\n3.每组频率分析\n4.高频=E求密钥\n5.验证"},
-{q:"dp泄露？",a:"dp=d mod (p-1)\na^(e·dp-1)-1是p倍数\n枚举a=2,3...\ngcd(…,n)=p"},
-{q:"广播攻击(e=3)？",a:"≥3个不同n\nCRT: m³ mod N\nm<ni → m³<N\niroot(result,3)"},
-{q:"AES模式一句话？",a:"ECB:独立,泄露模式\nCBC:链式,需IV\nCTR:计数器,禁重用\nGCM:AEAD\nOFB/CFB:流式"},
-{q:"HMAC？",a:"H(k⊕opad||H(k⊕ipad||msg))\nipad=0x36,opad=0x5c\n外层含secret\n比H(k||msg)安全"},
-{q:"Anomalous+Smart？",a:"#E(Fp)=p\np-adic提升到Qp\nECDLP→Fp上DLP\n多项式时间"},
-{q:"生日攻击？",a:"n位: O(2^(n/2))\nMD5→2^64\nSHA256→2^128\nMD5已完全破"},
-{q:"LLL与用途？",a:"格归约→近似最短\nM.LLL()\nCoppersmith/Knapsack\nLCG/HNP/NTRU"},
-{q:"低指数信号？",a:"e=3无padding\nm³<n→没取模\niroot(c,3)\n有padding→Coppersmith"},
-{q:"MT19937？",a:"624输出→克隆状态\nuntemper可逆\n之后全部可预测\n禁用random模块"},
-{q:"RSA第一步判断？",a:"n小→分解\ne小→开方/广播\ne大→Wiener\n同n不同e→共模\ndp→gcd\n|p-q|小→Fermat"},
-{q:"GCM nonce重用？",a:"恢复J0和H\n伪造任意tag\n完全破坏认证\n比CTR更严重"},
-{q:"SageMath ECC？",a:"E=EllipticCurve(GF(p),[a,b])\nE.order()\nP+Q, 2*P\ndiscrete_log(Q,P)"},
-{q:"PKCS#1 v1.5？",a:"加密:00||02||随机||00||M\n签名:00||01||FF||00||H\nBleichenbacher\nOAEP替代"},
-{q:"格攻击场景？",a:"Coppersmith\nKnapsack(低密度)\nLCG/PRNG预测\nHNP(ECDSA)\n近似GCD/NTRU"},
-{q:"CBC Bit-Flip？",a:"改P[i+1]某字节\nC[i]^=original^target\nP[i]随机化(副作用)\n需能忽略P[i]"},
-{q:"Pollard p-1？",a:"p-1是B-光滑\na^(B!) mod n\ngcd(a^(B!)-1,n)=p\ngmpy2实现"},
-{q:"Shamir？",a:"秘密=f(0), t-1次多项式\n分发n个点\n任意t个→插值\n<t个→信息论安全"},
-{q:"PHP MD5陷阱？",a:"0e开头→科学计数法=0\n==比较时相等\n用===或sha256"},
-{q:"比赛解题流程？",a:"1.判断类型\n2.提取参数\n3.对照决策树\n4.套模板\n5.卡20min换题\n6.拿flag提交"},
-{q:"Web信息收集？",a:"dirsearch/ffuf目录扫描\nnmap端口扫描\nwhatweb指纹\ngit/svn泄露\nrobots.txt/sitemap\n子域名枚举"},
-{q:"反序列化POP链？",a:"找入口: __wakeup/__destruct\n找利用: eval/system/file_put\n找连接: 属性可控传递\nPHP: phar://触发\nJava: Commons-Collections"},
-{q:"Pwn调试技巧？",a:"gdb+peda/pwndbg\nb *addr断点\nx/20wx $rsp看栈\nvmmap看内存布局\ncyclic找偏移\none_gadget找shell"},
-{q:"隐写工具集？",a:"PNG: zsteg/stegsolve\nJPEG: steghide/outguess\nGIF: 逐帧分离\n音频: audacity频谱\nPDF: pdfdetach/strings\n磁盘: foremost/binwalk"},
-{q:"流量分析？",a:"Wireshark过滤器\ntcp.stream eq N\nhttp contains flag\n导出HTTP对象\nTLS: 有key则解密\nUSB: 键盘/鼠标数据"},
-{q:"编码识别？",a:"Base64: 4倍数,+/=\nBase32: A-Z2-7\nBase16: 0-9A-F\nURL: %XX\nHTML实体: &#x\nUnicode: \\uXXXX\nRot: 字母偏移"},
-{q:"Linux保护机制？",a:"NX: 栈不可执行\nCanary: 栈溢出检测\nPIE: 地址随机化\nRELRO: GOT只读\nASLR: 系统级随机化\nseccomp: syscall过滤"},
-{q:"x64调用约定？",a:"参数: rdi,rsi,rdx,rcx,r8,r9\n返回: rax\n栈: 16字节对齐\ncall: push rip+jmp\nleave: mov rsp,rbp;pop rbp"},
-{q:"IDA快捷键？",a:"F5: 反编译\nx: 交叉引用\nn: 重命名\n/: 注释\ng: 跳转地址\n空格: 图形/文本切换\nTab: 切换视图"},
-{q:"CTF工具速查？",a:"Web: burp/sqlmap/dirsearch\nPwn: pwntools/ROPgadget\nRev: IDA/Ghidra/angr/z3\nMisc: binwalk/foremost/Wireshark\nCrypto: SageMath/gmpy2/RsaCtfTool"}
+{q:"SQL注入分类？",a:"【是什么】用户输入被当作SQL代码执行，从而操控数据库。\n【按注入点】GET参数、POST表单、Cookie、HTTP头\n【按类型】\n· Union注入：用UNION SELECT拼接查询，需列数相同\n· 布尔盲注：页面只返回真/假，逐字符猜\n· 时间盲注：用SLEEP()通过响应时间判断\n· 报错注入：利用数据库报错信息泄露数据\n· 堆叠注入：分号执行多条语句\n【绕过技巧】大小写混合、双写(select→selselectect)、注释/**/、URL编码、MySQL内联注释/*!50000*/"},
+{q:"XSS三种类型？",a:"【是什么】跨站脚本攻击，让浏览器执行攻击者注入的JS代码。\n【反射型】恶意代码在URL参数中，需诱导用户点击链接才触发，不存储\n【存储型】恶意代码存入数据库，所有访问该页面的人都中招，危害最大\n【DOM型】代码不经过服务器，纯前端JS处理URL/DOM时触发\n【防御】输出编码(<>转义)、CSP策略、Cookie设HttpOnly防窃取、输入过滤"},
+{q:"文件上传绕过？",a:"【是什么】上传恶意文件(如webshell)到服务器并执行。\n【绕过后缀检测】.php5/.phtml/.phar/.php.jpg\n【绕过MIME检测】改Content-Type为image/jpeg\n【绕过内容检测】图片马(图片头部+PHP代码)+文件包含触发\n【解析漏洞】Apache多后缀(.php.jpg从右往左解析)\n【00截断】PHP<5.3.4用%00截断文件名\n【核心】关键是让服务器把文件当PHP解析执行"},
+{q:"SSRF利用？",a:"【是什么】服务端请求伪造，让服务器代替你发起网络请求。\n【危害】探测内网、读取本地文件、攻击内网服务(Redis/MySQL)\n【伪协议】file://读本地文件、gopher://攻击内网服务、dict://探测端口\n【内网地址】127.0.0.1、10.x.x.x、172.16-31.x.x、192.168.x.x\n【绕过限制】用@、[::]、短网址、DNS重绑定、302跳转绕过白名单"},
+{q:"ROP链构造？",a:"【是什么】Return-Oriented Programming，串联程序中已有的代码片段(gadget)来执行任意操作，绕过NX保护。\n【步骤】\n1. checksec查看程序开了哪些保护\n2. ROPgadget --binary xxx 找gadget(如pop rdi;ret)\n3. 构造payload: 填充padding + gadget地址 + 参数\n4. ret2libc: 先泄露puts真实地址→算出libc基址→调用system(\"/bin/sh\")\n【注意】x64需要栈16字节对齐(加一个ret gadget)"},
+{q:"格式化字符串？",a:"【是什么】printf格式化函数中用户可控格式串，导致信息泄露或任意内存写入。\n【泄露信息】%p打印栈上指针，%7$p打印第7个参数\n【任意写】%n把已输出的字符数写入对应地址\n【改GOT表】把printf@GOT覆写为system地址，下次调用printf就变成执行命令\n【构造】AAAA%7$n 表示把已输出字节数写入栈第7个位置指向的地址\n【控制大小】hhn写1字节、hn写2字节、n写4字节"},
+{q:"堆利用概览？",a:"【是什么】利用堆内存管理(分配/释放)中的漏洞控制程序执行流。\n【fastbin】单链表，只检查size不检查fd指针，改fd可分配到任意地址\n【tcache】glibc 2.26+引入，几乎无检查，tcache poisoning改fd即可\n【unsorted bin】双向链表，unlink攻击改指针\n【UAF】Use-After-Free，free后指针未清空继续使用，可改vtable/函数指针\n【off-by-one】多写一字节改chunk size或fd低位\n【house系列】force unlink/orange/spirit等高级利用手法"},
+{q:"逆向分析流程？",a:"【是什么】分析编译后的程序，还原其逻辑找到flag。\n【步骤】\n1. file/strings初步判断文件类型和关键字符串\n2. checksec(ELF)或PEiD(PE)查壳和保护\n3. IDA Pro打开，F5反编译看伪代码\n4. 找main函数/入口点/验证逻辑\n5. 分析算法(加密/编码/校验)\n6. 用z3约束求解或angr符号执行\n7. gdb/x64dbg动态调试验证\n【核心】静态看逻辑+动态看数据，两者结合"},
+{q:"常见加密识别？",a:"【是什么】通过密文特征判断使用了什么算法。\nMD5: 32位十六进制字符\nSHA1: 40位十六进制\nSHA256: 64位十六进制\nBase64: A-Za-z0-9+/，长度是4的倍数，末尾可能有=\nAES: 密文长度是16字节的倍数\nRC4: 有256字节的S盒初始化\nTEA/XTEA: 代码中有魔数0x9e3779b9\nRSA: 有非常大的整数n、e、c"},
+{q:"Misc文件头？",a:"【是什么】文件开头的魔数(magic bytes)，用于识别真实文件类型，改后缀不改文件头。\nPNG: 89 50 4E 47 (‰PNG)\nJPEG: FF D8 FF\nGIF: 47 49 46 (GIF)\nZIP/DOCX/JAR: 50 4B 03 04 (PK)\nPDF: 25 50 44 46 (%PDF)\nELF(Linux程序): 7F 45 4C 46\nPE(Windows程序): 4D 5A (MZ)\n【用途】文件损坏时修复文件头，或识别被改后缀的文件"},
+{q:"RSA中φ(n)怎么算？",a:"【是什么】欧拉函数φ(n)表示小于n且与n互素的正整数个数，RSA中用来求私钥d。\n【n=p×q(两个大素数)】φ(n) = (p-1)(q-1)\n【多素数n=p1×p2×p3】φ(n) = (p1-1)(p2-1)(p3-1)\n【n=p^k(素数幂)】φ(n) = p^k - p^(k-1)\n【为什么重要】知道φ(n)就能算d=e的逆元mod φ(n)，从而解密\n【攻击关键】分解n得到p和q → 算出φ → 破解RSA"},
+{q:"共模攻击？",a:"【是什么】同一个明文m用同一个n但不同的e1、e2加密，得到c1和c2，无需分解n即可恢复明文。\n【条件】gcd(e1, e2) = 1（两个公钥指数互素）\n【原理】扩展欧几里得求出s1、s2使得 s1×e1 + s2×e2 = 1\n【计算】m = c1^s1 × c2^s2 mod n\n【注意】如果s1或s2是负数，先对对应的c求模逆元再取正数次幂\n【防御】不要多人共用同一个n"},
+{q:"Wiener's Attack？",a:"【是什么】当RSA私钥d很小时（通常e很大），可通过连分数快速恢复d。\n【识别信号】e的位数接近n的位数（比如n是2048位，e也有600+位）\n【原理】d小 → e/n ≈ k/d → 对e/n做连分数展开，其收敛子就是k/d的候选\n【步骤】\n1. 计算e/n的连分数展开\n2. 逐个取收敛子(k,d)作为候选\n3. 用d尝试解密验证\n【工具】Python手写或用owiener库"},
+{q:"Padding Oracle？",a:"【是什么】CBC模式下，如果服务器会告诉你\"padding是否正确\"，就能逐字节解密整个密文。\n【原理】CBC解密: P[i] = D(C[i]) ⊕ C[i-1]，中间值I=D(C[i])是固定的\n【攻击】从最后一个块开始，修改C[n-1]的最后一个字节，直到padding合法(=0x01)\n此时 I的末字节 ⊕ 你改的值 = 0x01，从而推出I，再异或原始C得到明文\n【逐字节】推出1字节后，构造padding=0x02继续推第2字节，以此类推\n【防御】先验证MAC再解密，不暴露padding错误信息"},
+{q:"长度扩展攻击？",a:"【是什么】已知H(secret||msg)的哈希值，在不知道secret的情况下，构造H(secret||msg||padding||append)的合法哈希。\n【条件】使用MD结构哈希(MD5/SHA1/SHA256)且是H(secret||msg)形式\n【原理】MD结构逐块处理，知道中间状态就能继续往后算\n【步骤】知道secret长度(可爆破)→用hash_extender工具追加数据\n【免疫】SHA-3(Keccak)和HMAC不受此攻击影响"},
+{q:"ECB模式攻击？",a:"【是什么】ECB模式每个块独立加密，相同明文块→相同密文块，泄露数据模式。\n【经典图片】ECB加密的图片能看出轮廓\n【Byte-at-a-Time攻击】\n1. 控制前缀长度，使目标明文的下一个字节恰好落在某块末尾\n2. 构造256个候选(该字节为0x00~0xFF)\n3. 对比密文块，匹配的那个就是正确字节\n4. 逐字节重复，恢复全部明文\n【防御】永远不用ECB，用CBC/CTR/GCM"},
+{q:"CTR nonce重用？",a:"【是什么】CTR模式用keystream异或明文，如果同一个nonce+counter用了两次，keystream相同。\n【后果】c1⊕c2 = (m1⊕ks)⊕(m2⊕ks) = m1⊕m2，keystream被消掉\n【利用】知道其中一个明文 → 直接恢复另一个明文\n【GCM更严重】nonce重用还会泄露认证密钥H，可以伪造任意tag\n【铁律】CTR/GCM的nonce绝对不能重用！"},
+{q:"ECDSA k重用？",a:"【是什么】ECDSA签名时随机数k如果用了两次，私钥直接暴露。\n【公式】签名: s = k^(-1)(z + r×d) mod n，其中d是私钥\n【两次签名用同一个k】\ns1 = k^(-1)(z1 + r×d)\ns2 = k^(-1)(z2 + r×d)\n【求解】k = (z1-z2)/(s1-s2) mod n\n然后 d = (s1×k - z1)/r mod n\n【教训】k必须每次随机且不可预测"},
+{q:"Fermat分解？",a:"【是什么】当RSA的p和q非常接近时(|p-q|很小)，n可以表示为两个平方数之差，快速分解。\n【原理】n = p×q = ((p+q)/2)² - ((p-q)/2)² = a² - b²\n【步骤】\n1. a = ⌈√n⌉（向上取整）\n2. 计算 b² = a² - n\n3. 如果b²是完全平方数，则b = √(b²)\n4. p = a - b, q = a + b\n5. 否则a加1继续\n【识别】n的两个因子位数相同且非常接近时用此法"},
+{q:"Coppersmith攻击？",a:"【是什么】已知RSA明文或因子p的一部分比特(高位或低位)，用格归约求出剩余部分。\n【适用场景】\n· 已知明文m的高位(比如知道flag格式)\n· 已知p的高位(比如泄露了一半)\n【SageMath实现】\nf = x + known_part（构造多项式）\nf = f.change_ring(Zmod(n))\nroots = f.small_roots(X=2^unknown_bits, beta=0.4)\n【关键】未知比特数不能太多，一般<n的1/4才能解"},
+{q:"维吉尼亚密码破解？",a:"【是什么】多表替换密码，用关键词决定每个字母的偏移量，比凯撒难但仍可破。\n【破解步骤】\n1. 求密钥长度：Kasiski法(找重复串间距的GCD)或重合指数IC法\n2. 按密钥长度把密文分组(第1、k+1、2k+1...个字母一组)\n3. 每组相当于单表凯撒，做频率分析\n4. 英文中E频率最高，假设每组最高频字母=E，推出该位密钥\n5. 验证拼出的明文是否通顺\n【工具】quipqiup.com 或 Python脚本"},
+{q:"dp泄露攻击？",a:"【是什么】RSA中dp = d mod (p-1)泄露时，可以恢复p从而分解n。\n【原理】由 dp×e ≡ 1 (mod p-1)，得 e×dp - 1 = k×(p-1)\n所以 a^(e×dp-1) - 1 一定是p的倍数（对任意a）\n【步骤】\n1. 枚举 a = 2, 3, 4...\n2. 计算 x = pow(a, e*dp-1, n) - 1\n3. p = gcd(x, n)\n4. 如果p>1且p<n，就找到了p\n5. q = n/p，正常解密\n【工具】几行Python即可"},
+{q:"广播攻击(e=3)？",a:"【是什么】同一个明文m用e=3加密发给≥3个不同的人(不同n)，用中国剩余定理恢复m。\n【原理】c1=m³ mod n1, c2=m³ mod n2, c3=m³ mod n3\nCRT求出 m³ mod (n1×n2×n3)\n因为 m < 每个ni，所以 m³ < n1×n2×n3，没有取模\n【步骤】\n1. CRT算出 m³ 的精确值\n2. 直接开三次方: m = iroot(result, 3)\n【推广】e=k时需要≥k个不同n\n【防御】加密前加随机padding(OAEP)"},
+{q:"AES各模式一句话？",a:"ECB: 每块独立加密，相同明文→相同密文，泄露模式，别用\nCBC: 链式，每块异或前一块密文再加密，需要IV，padding错误可被利用\nCTR: 计数器模式，变成流加密，nonce+counter不能重用\nGCM: CTR+认证(AEAD)，既加密又验证完整性，推荐\nOFB/CFB: 也是流式，把分组密码当流密码用\n【选择】优先GCM，其次CTR，绝不用ECB"},
+{q:"HMAC？",a:"【是什么】基于哈希的消息认证码，验证消息完整性和来源。\n【公式】HMAC(k,msg) = H((k⊕opad) || H((k⊕ipad) || msg))\n其中 ipad=0x36重复, opad=0x5c重复\n【为什么安全】两层哈希，外层包含secret，比简单的H(k||msg)安全\n【对比】H(k||msg)受长度扩展攻击，HMAC不受\n【用途】API签名验证、JWT(HS256就是HMAC-SHA256)"},
+{q:"Anomalous + Smart攻击？",a:"【是什么】针对特殊椭圆曲线(#E(Fp)=p，即曲线上的点数等于域的素数)的多项式时间破解ECDLP。\n【原理】用p-adic数把曲线从Fp\"提升\"到Qp(有理数p-adic域)\n在Qp上ECDLP变成了简单的除法问题\n【识别】E.order() == p（点数等于素数）\n【工具】SageMath几行代码:\nE = EllipticCurve(GF(p),[a,b])\n用Smart's attack的lift函数\n【教训】选曲线时必须检查order≠p"},
+{q:"生日攻击？",a:"【是什么】利用概率论中的生日悖论，找哈希碰撞只需O(2^(n/2))次而非O(2^n)。\n【原理】23人中就有50%概率两人同生日，同理n位哈希只需约2^(n/2)个样本就能找到碰撞\n【具体】\nMD5(128位): 理论2^64次，实际已被完全攻破\nSHA1(160位): 2^80次，已有实际碰撞\nSHA256(256位): 2^128次，目前安全\n【防御】用≥256位的哈希函数"},
+{q:"LLL算法与用途？",a:"【是什么】Lenstra-Lenstra-Lovász格归约算法，找到格中\"近似最短\"的向量。\n【SageMath】M = Matrix(ZZ, [...]); L = M.LLL()\n【CTF中的应用】\n· Coppersmith攻击的底层就是LLL\n· 解低密度背包问题(Knapsack)\n· LCG/PRNG输出预测\n· HNP(隐藏数问题，破ECDSA)\n· NTRU密码分析\n【本质】把问题建模为格，构造矩阵，LLL约化后最短向量就是答案"},
+{q:"低指数攻击(e=3)？",a:"【是什么】RSA公钥e=3且明文m很小时，m³<n，加密时没有真正取模。\n【识别】e=3，明文短(比如flag只有几十字节)\n【原理】c = m³ mod n，但m³ < n，所以c = m³（精确值）\n【解法】直接开三次方: m = iroot(c, 3)\n【有padding时】如果加了padding导致m³>n，需要用Coppersmith\n【防御】e至少用65537，且必须加OAEP padding"},
+{q:"MT19937预测？",a:"【是什么】Python random模块和很多语言的默认PRNG，状态可被克隆从而预测所有后续输出。\n【原理】MT19937有624个32位整数作为内部状态\n【攻击】\n1. 收集624个连续输出\n2. 对每个输出做untemper(逆变换)恢复状态\n3. 克隆完整状态后，后续所有随机数都可预测\n【应用】CTF中预测token/验证码/密钥\n【防御】安全场景用secrets模块或/dev/urandom"},
+{q:"RSA拿到参数第一步？",a:"【决策树】拿到n,e,c后按以下顺序判断:\nn很小(<100位) → factordb.com直接分解\ne很小(=3) → 尝试直接开方/广播攻击\ne很大(位数接近n) → Wiener's Attack\n同n不同e → 共模攻击\n给了dp → dp泄露攻击(gcd)\n|p-q|很小 → Fermat分解\n已知明文/p的一部分 → Coppersmith\n都不是 → 检查是否有其他泄露或特殊结构"},
+{q:"GCM nonce重用？",a:"【是什么】GCM模式(最推荐的AEAD)如果nonce重用，比CTR重用更灾难性。\n【后果】\n1. 和CTR一样，keystream重用→明文异或泄露\n2. 更严重：泄露认证子密钥H\n3. 有了H可以伪造任意消息的tag→完全绕过认证\n【对比】CTR重用只泄露机密性，GCM重用连完整性都丢了\n【铁律】GCM的nonce绝对不能重用，建议用随机96位nonce"},
+{q:"SageMath做ECC？",a:"【常用代码】\n定义曲线: E = EllipticCurve(GF(p), [a, b])\n求点数: E.order()\n点运算: P + Q, 2*P, k*P\n求离散对数: P.discrete_log(Q)（小阶时）\n【攻击场景】\n· 小阶曲线: 直接discrete_log\n· #E=p(Anomalous): Smart's attack\n· #E=p+1: MOV攻击转到有限域\n· 光滑阶: Pohlig-Hellman\n【核心】先E.order()看阶的性质再选攻击方法"},
+{q:"PKCS#1 v1.5？",a:"【是什么】RSA最早的padding方案，有已知漏洞，现在应该用OAEP替代。\n【加密格式】0x00 || 0x02 || 随机非零字节(≥8) || 0x00 || 明文\n【签名格式】0x00 || 0x01 || 0xFF填充 || 0x00 || 哈希\n【Bleichenbacher攻击】利用服务器对padding错误的不同响应(类似Padding Oracle)，逐字节恢复明文\n【教训】永远用OAEP(RSA-OAEP)替代PKCS#1 v1.5加密"},
+{q:"格攻击适用场景？",a:"【核心思想】把密码学问题转化为\"在格中找短向量\"，用LLL/BKZ求解。\n【常见场景】\n· Coppersmith: 已知部分比特求剩余\n· Knapsack: 低密度背包加密\n· LCG/PRNG: 预测伪随机数输出\n· HNP: ECDSA中nonce部分泄露→恢复私钥\n· 近似GCD: 带噪声的多项式GCD\n· NTRU: 格密码本身也可被更强的格攻击破\n【建模关键】把未知量放在格的短向量位置"},
+{q:"CBC Bit-Flip？",a:"【是什么】CBC模式下，修改密文C[i]的某个字节，可以精确控制下一块明文P[i+1]对应字节的变化。\n【原理】P[i+1] = D(C[i+1]) ⊕ C[i]，改C[i]某字节→P[i+1]对应字节异或变化\n【操作】想把P[i+1]的某字节从A改成B:\nC[i]对应字节 ^= A ^ B\n【副作用】P[i]对应位置会变成随机值(因为D(C[i])变了)\n【应用】绕过权限检查(把role=user改成role=admin)，需要能容忍P[i]损坏"},
+{q:"Pollard p-1分解？",a:"【是什么】当p-1是B-光滑数(所有素因子都≤B)时，可以快速分解n。\n【原理】由Fermat小定理，a^(p-1)≡1 mod p\n如果p-1的所有因子都≤B，则a^(B!)≡1 mod p\n所以 gcd(a^(B!) - 1, n) = p\n【步骤】\n1. 选a=2，逐步计算 a = pow(a, i, n) for i=2,3,...,B\n2. 每步算 gcd(a-1, n)\n3. 如果得到非平凡因子就成功\n【工具】gmpy2或sympy的pollard_pm1"},
+{q:"Shamir秘密共享？",a:"【是什么】把一个秘密拆成n份，任意t份可以恢复秘密，少于t份得不到任何信息。\n【原理】构造t-1次多项式f(x)，秘密=f(0)\n分发n个点(x_i, f(x_i))给n个人\n【恢复】任意t个点→拉格朗日插值→还原f(x)→f(0)=秘密\n【安全性】少于t个点时，f(0)可以是任何值→信息论安全\n【CTF应用】给你t个点让你插值求f(0)，SageMath: lagrange_polynomial"},
+{q:"PHP MD5弱类型陷阱？",a:"【是什么】PHP用==比较两个MD5值时的经典漏洞。\n【原理】PHP的==会做类型转换，\"0e123456\"被解释为科学计数法0×10^123456=0\n【利用】找两个不同字符串，其MD5都以0e开头且后面全是数字\n例如: md5('240610708')和md5('QNKCDZO')都是0e开头→==判断相等\n【绕过】绕过md5($a)==md5($b)且a≠b的检查\n【防御】用===严格比较，或用sha256，或用hash_equals()"},
+{q:"比赛解题流程？",a:"【标准流程】\n1. 判断题目类型和方向(Web/Pwn/Rev/Misc/Crypto)\n2. 提取所有已知参数和条件\n3. 对照该方向的攻击决策树\n4. 找到匹配的模板/方法，套脚本\n5. 卡住超过20分钟→换题或问队友\n6. 拿到flag立即提交(注意格式flag{...})\n【心态】先做简单题拿分，不要死磕一道\n【团队】分工明确，遇到跨方向题及时交接"},
+{q:"Web信息收集？",a:"【是什么】打Web题的第一步，尽可能多地发现攻击面。\n【目录扫描】dirsearch/ffuf/gobuster 扫隐藏路径\n【端口扫描】nmap -sV 发现开放服务\n【指纹识别】whatweb/wappalyzer 判断CMS和框架\n【源码泄露】.git/.svn/.DS_Store/备份文件(.bak/.swp)\n【其他】robots.txt、sitemap.xml、子域名枚举、JS文件中的API路径\n【核心】信息收集越充分，攻击面越大"},
+{q:"反序列化POP链？",a:"【是什么】把多个类的魔术方法串成调用链，从反序列化入口一路执行到危险函数。\n【PHP构造】\n1. 找入口: __wakeup()或__destruct()（反序列化时自动调用）\n2. 找利用点: eval()/system()/file_put_contents()\n3. 找中间桥梁: 属性可控，能从一个对象传到下一个\n4. 串成链: 入口→中间→利用\n【触发方式】unserialize()直接触发，或phar://伪协议触发\n【Java】Commons-Collections/CB链是经典模板"},
+{q:"Pwn调试技巧？",a:"【工具】gdb + pwndbg/peda插件(增强显示)\n【常用命令】\nb *0x400500: 在地址处下断点\nr/continue: 运行/继续\nx/20wx $rsp: 查看栈顶20个字\nvmmap: 查看内存段布局(找libc地址)\ncyclic 100: 生成测试字符串找溢出偏移\ncyclic -l 0x6161616b: 反查偏移\none_gadget libc.so: 找一键getshell的地址\n【流程】cyclic找偏移→下断点看寄存器→构造payload→验证"},
+{q:"隐写工具集？",a:"【按文件类型选工具】\nPNG: zsteg(LSB隐写)、stegsolve(通道分析)、pngcheck\nJPEG: steghide(需密码)、outguess、jsteg\nGIF: 逐帧分离(gifsplitter)看每帧\n音频: Audacity看频谱图、steghide\nPDF: pdfdetach提取附件、strings找隐藏文本\n磁盘/复合文件: binwalk检测、foremost分离\n【通用思路】strings看明文→binwalk看嵌入→对应类型工具提取"},
+{q:"流量分析？",a:"【工具】Wireshark打开pcap/pcapng文件\n【常用过滤器】\ntcp.stream eq 0: 跟踪第N条TCP流\nhttp.request.method==\"GET\": 过滤GET请求\nhttp contains \"flag\": 搜索关键词\ndns: 只看DNS流量\n【操作】\n· 右键→追踪流→看完整HTTP请求响应\n· 文件→导出HTTP对象→提取传输的文件\n· TLS流量: 如果有key log文件可以解密\n· USB流量: 提取键盘/鼠标数据还原操作"},
+{q:"编码识别与转换？",a:"【特征识别】\nBase64: A-Za-z0-9+/，长度4的倍数，末尾=\nBase32: 只有A-Z和2-7，末尾=\nBase16/Hex: 只有0-9A-F\nURL编码: %XX格式\nHTML实体: &#x41;或&#65;\nUnicode: \\u0041\nRot13/Caesar: 字母偏移\n【多层嵌套】CTF常套多层: Base64→Hex→Base32→...\n【工具】CyberChef(gchq.github.io/CyberChef)一键自动识别和解码\n【Python】base64.b64decode() / bytes.fromhex()"},
+{q:"Linux保护机制？",a:"【NX(DEP)】栈和堆不可执行，不能直接跑shellcode→用ROP绕过\n【Canary】栈溢出时在返回地址前放随机值，溢出会破坏它被检测到→泄露canary或绕过\n【PIE】程序基地址随机化→需要先泄露地址\n【RELRO】GOT表设为只读→不能改GOT，用其他方式\n【ASLR】系统级，libc/栈/堆地址每次不同→泄露后计算偏移\n【seccomp】过滤系统调用，可能禁execve→用open/read/write拿flag\n【查看】checksec命令一键查看"},
+{q:"x64调用约定？",a:"【是什么】x86-64下函数调用时参数怎么传、返回值怎么给。\n【参数传递(前6个)】rdi, rsi, rdx, rcx, r8, r9\n第7个及以后放栈上\n【返回值】rax\n【栈对齐】call之前rsp必须16字节对齐\n【call指令】push rip + jmp target（保存返回地址）\n【leave指令】mov rsp,rbp; pop rbp（恢复栈帧）\n【Pwn意义】ROP时pop rdi;ret就是把栈顶值放入rdi作为第一参数"},
+{q:"IDA快捷键？",a:"F5: 反编译当前函数(最常用)\nx: 查看交叉引用(谁调用了这个/这个调用了谁)\nn: 重命名变量/函数(让伪代码可读)\n/: 添加注释\ng: 跳转到指定地址\n空格: 图形视图/文本视图切换\nTab: 切换反汇编/伪代码\nCtrl+x: 字符串窗口(找关键字符串)\nShift+F12: 字符串列表\n【技巧】先Shift+F12找flag/关键字符串→x看引用→F5看逻辑"},
+{q:"CTF工具速查？",a:"【Web】Burp Suite(抓包改包)、sqlmap(自动注入)、dirsearch(目录扫描)\n【Pwn】pwntools(Python利用框架)、ROPgadget(找gadget)、one_gadget\n【Reverse】IDA Pro/Ghidra(反编译)、x64dbg/gdb(调试)、angr/z3(自动求解)\n【Misc】binwalk/foremost(文件分离)、Wireshark(流量)、stegsolve(隐写)、CyberChef(编码)\n【Crypto】SageMath(数学计算)、gmpy2(大数)、RsaCtfTool(RSA自动攻击)、hashcat(哈希爆破)\n【通用】Python是一切的胶水"}
 ];
 
 // AI Configuration
