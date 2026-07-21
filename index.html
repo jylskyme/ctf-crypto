@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CTF Crypto 刷题</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--primary:#6c5ce7;--primary-light:#a29bfe;--success:#00b894;--danger:#e17055;--warn:#fdcb6e;--bg:#0a0e1a;--card:#141b2d;--card2:#1a2340;--text:#e8e8e8;--text2:#8892b0;--border:#233554;--radius:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;padding-bottom:80px;overflow-x:hidden}
+.header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.95);backdrop-filter:blur(12px);padding:12px 16px;border-bottom:1px solid var(--border)}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;background:linear-gradient(135deg,#6c5ce7,#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-right{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2)}
+.header-right b{color:var(--warn)}
+.progress-bar{height:4px;background:var(--card2);border-radius:2px;margin-top:10px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#00cec9);border-radius:2px;transition:width .5s ease}
+.nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:rgba(20,27,45,.98);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:100;padding:6px 0 env(safe-area-inset-bottom)}
+.nav-item{flex:1;text-align:center;padding:8px 0;cursor:pointer;transition:all .2s;position:relative}
+.nav-item .icon{font-size:20px;display:block;transition:transform .2s}
+.nav-item .label{font-size:10px;margin-top:3px;color:var(--text2);transition:color .2s}
+.nav-item.active .label{color:var(--primary-light)}
+.nav-item.active .icon{transform:scale(1.15)}
+.nav-item .badge{position:absolute;top:4px;right:calc(50% - 18px);background:var(--danger);color:#fff;font-size:9px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.page{display:none;padding:16px;max-width:600px;margin:0 auto}
+.page.active{display:block}
+.section-title{font-size:16px;font-weight:600;margin-bottom:14px}
+.quiz-category{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cat-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s}
+.cat-btn:active{transform:scale(.96)}
+.cat-btn.selected{border-color:var(--primary);background:rgba(108,92,231,.1);box-shadow:0 0 12px rgba(108,92,231,.15)}
+.cat-btn .cat-icon{font-size:24px}
+.cat-btn .cat-name{font-size:12px;margin-top:6px;color:var(--text2)}
+.cat-btn.selected .cat-name{color:var(--primary-light)}
+.cat-btn .cat-count{font-size:10px;color:var(--text2);margin-top:2px;opacity:.7}
+.mode-toggle{display:flex;gap:8px;margin-bottom:12px}
+.mode-btn{flex:1;padding:10px;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .2s}
+.mode-btn.active{border-color:var(--primary);color:var(--primary-light);background:rgba(108,92,231,.1)}
+.start-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),#00cec9);border:none;border-radius:var(--radius);color:#fff;font-size:16px;font-weight:600;cursor:pointer;margin-top:10px;transition:transform .15s,opacity .15s}
+.start-btn:active{transform:scale(.97);opacity:.9}
+.start-btn.secondary{background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:14px;font-weight:400}
+.timer-bar{display:none;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.timer-bar.show{display:flex}
+.timer-bar .time{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--warn)}
+.timer-bar .time.danger{color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-toggle{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;color:var(--text2)}
+.timer-toggle input{accent-color:var(--primary);width:16px;height:16px}
+.question-card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;border:1px solid var(--border);animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.q-num{font-size:12px;color:var(--primary-light);font-weight:600}
+.q-diff{font-size:11px;padding:2px 8px;border-radius:10px}
+.q-diff.easy{background:rgba(0,184,148,.15);color:var(--success)}
+.q-diff.medium{background:rgba(253,203,110,.15);color:var(--warn)}
+.q-diff.hard{background:rgba(225,112,85,.15);color:var(--danger)}
+.q-text{font-size:15px;line-height:1.7;margin-bottom:16px}
+.q-text code{background:var(--card2);padding:2px 6px;border-radius:4px;font-size:13px;color:#74b9ff;font-family:'Courier New',monospace;word-break:break-all}
+.q-options{display:flex;flex-direction:column;gap:10px}
+.q-opt{padding:13px 16px;background:var(--card2);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:14px;transition:all .2s;display:flex;align-items:center;gap:10px;line-height:1.4}
+.q-opt:active{transform:scale(.98)}
+.q-opt .opt-letter{width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;transition:all .2s}
+.q-opt.correct{border-color:var(--success);background:rgba(0,184,148,.1)}
+.q-opt.correct .opt-letter{background:var(--success);color:#fff}
+.q-opt.wrong{border-color:var(--danger);background:rgba(225,112,85,.1)}
+.q-opt.wrong .opt-letter{background:var(--danger);color:#fff}
+.q-opt.disabled{pointer-events:none;opacity:.6}
+.q-explain{margin-top:14px;padding:14px;background:rgba(108,92,231,.08);border-radius:10px;border-left:3px solid var(--primary);font-size:13px;line-height:1.7;color:var(--text2);display:none;animation:fadeIn .3s ease}
+.q-explain.show{display:block}
+.q-explain b{color:var(--primary-light)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.next-btn{width:100%;padding:13px;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;cursor:pointer;margin-top:12px;display:none;transition:background .2s}
+.next-btn.show{display:block}
+.next-btn:active{background:var(--border)}
+.result-card{text-align:center;padding:40px 20px;animation:slideUp .4s ease}
+.result-score{font-size:52px;font-weight:700;background:linear-gradient(135deg,var(--primary),#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-label{color:var(--text2);margin-top:8px;font-size:14px}
+.result-detail{margin-top:20px;display:flex;justify-content:center;gap:30px}
+.result-detail .item{text-align:center}
+.result-detail .num{font-size:22px;font-weight:600}
+.result-detail .lbl{font-size:11px;color:var(--text2);margin-top:4px}
+.result-time{margin-top:12px;font-size:13px;color:var(--text2)}
+.learn-section{margin-bottom:20px}
+.learn-section h3{font-size:15px;color:var(--primary-light);margin-bottom:12px;padding-left:10px;border-left:3px solid var(--primary)}
+.learn-card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:10px;border:1px solid var(--border)}
+.learn-card h4{font-size:14px;margin-bottom:8px;color:var(--text)}
+.learn-card p{font-size:13px;color:var(--text2);line-height:1.7}
+.learn-card code{background:var(--card2);padding:1px 5px;border-radius:3px;font-size:12px;color:#74b9ff}
+.formula-box{background:var(--card2);border-radius:8px;padding:12px;margin:10px 0;font-family:'Courier New',monospace;font-size:12px;color:#dfe6e9;overflow-x:auto;white-space:pre-wrap;line-height:1.6}
+.tip-inline{background:rgba(253,203,110,.08);border-left:3px solid var(--warn);padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:12px;color:var(--warn)}
+.flashcard{perspective:1000px;height:220px;margin:16px 0;cursor:pointer}
+.flashcard-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
+.flashcard-front,.flashcard-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.flashcard-front{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border)}
+.flashcard-back{background:linear-gradient(135deg,#1a1a3e,#0d2137);border:1px solid var(--primary);transform:rotateY(180deg)}
+.flashcard-front .fc-q{font-size:16px;font-weight:600;line-height:1.5}
+.flashcard-front .fc-hint{font-size:11px;color:var(--text2);margin-top:12px}
+.flashcard-back .fc-a{font-size:13px;line-height:1.7;color:var(--primary-light)}
+.fc-nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.fc-nav button{padding:10px 20px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;cursor:pointer}
+.fc-nav button:active{background:var(--border)}
+.fc-nav .fc-count{font-size:12px;color:var(--text2)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:16px;text-align:center;border:1px solid var(--border)}
+.stat-card .stat-num{font-size:28px;font-weight:700;color:var(--primary-light)}
+.stat-card .stat-label{font-size:11px;color:var(--text2);margin-top:4px}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--card);border-radius:10px;margin-bottom:8px;border:1px solid var(--border)}
+.history-item .h-cat{font-size:13px}
+.history-item .h-score{font-size:13px;font-weight:600}
+.history-item .h-date{font-size:11px;color:var(--text2)}
+.wrong-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
+.wrong-item .w-q{font-size:13px;line-height:1.5;margin-bottom:8px}
+.wrong-item .w-a{font-size:12px;color:var(--success)}
+.wrong-item .w-yours{font-size:12px;color:var(--danger);margin-top:4px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:13px}
+.daily-banner{background:linear-gradient(135deg,rgba(108,92,231,.15),rgba(0,206,201,.1));border:1px solid rgba(108,92,231,.3);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.daily-banner .d-icon{font-size:28px}
+.daily-banner .d-text{flex:1}
+.daily-banner .d-title{font-size:14px;font-weight:600;color:var(--primary-light)}
+.daily-banner .d-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.daily-banner .d-btn{padding:8px 14px;background:var(--primary);border:none;border-radius:8px;color:#fff;font-size:12px;cursor:pointer;white-space:nowrap}
+.tab-row{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.tab-pill{padding:7px 14px;border-radius:20px;font-size:12px;background:var(--card);border:1px solid var(--border);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s}
+.tab-pill.active{background:rgba(108,92,231,.15);border-color:var(--primary);color:var(--primary-light)}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="header-top">
+<h1>CTF Crypto 刷题</h1>
+<div class="header-right"><span>已答 <b id="totalAnswered">0</b></span><span>正确率 <b id="headerRate">0%</b></span></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="globalProgress" style="width:0%"></div></div>
+</div>
+
+<div class="page active" id="page-quiz">
+<div id="quiz-select">
+<div class="daily-banner" id="dailyBanner">
+<div class="d-icon">🎯</div>
+<div class="d-text"><div class="d-title">每日挑战</div><div class="d-sub" id="dailySub">今日 5 题混合，完成打卡</div></div>
+<div class="d-btn" onclick="startDaily()">开始</div>
+</div>
+<p class="section-title">选择方向</p>
+<div class="quiz-category">
+<div class="cat-btn selected" data-cat="math" onclick="selectCat(this)"><div class="cat-icon">🔢</div><div class="cat-name">数论基础</div><div class="cat-count">28 题</div></div>
+<div class="cat-btn" data-cat="classical" onclick="selectCat(this)"><div class="cat-icon">🏛️</div><div class="cat-name">古典密码</div><div class="cat-count">26 题</div></div>
+<div class="cat-btn" data-cat="rsa" onclick="selectCat(this)"><div class="cat-icon">🔐</div><div class="cat-name">RSA</div><div class="cat-count">32 题</div></div>
+<div class="cat-btn" data-cat="symmetric" onclick="selectCat(this)"><div class="cat-icon">🔒</div><div class="cat-name">对称加密</div><div class="cat-count">26 题</div></div>
+<div class="cat-btn" data-cat="hash" onclick="selectCat(this)"><div class="cat-icon">#️⃣</div><div class="cat-name">哈希</div><div class="cat-count">22 题</div></div>
+<div class="cat-btn" data-cat="ecc" onclick="selectCat(this)"><div class="cat-icon">📐</div><div class="cat-name">椭圆曲线</div><div class="cat-count">22 题</div></div>
+<div class="cat-btn" data-cat="lattice" onclick="selectCat(this)"><div class="cat-icon">🔷</div><div class="cat-name">格与杂项</div><div class="cat-count">24 题</div></div>
+<div class="cat-btn" data-cat="mixed" onclick="selectCat(this)"><div class="cat-icon">🎲</div><div class="cat-name">随机混合</div><div class="cat-count">全部</div></div>
+</div>
+<div class="mode-toggle">
+<div class="mode-btn active" data-mode="5" onclick="selectMode(this)">5 题</div>
+<div class="mode-btn" data-mode="10" onclick="selectMode(this)">10 题</div>
+<div class="mode-btn" data-mode="20" onclick="selectMode(this)">20 题</div>
+<div class="mode-btn" data-mode="all" onclick="selectMode(this)">全部</div>
+</div>
+<div class="timer-toggle"><input type="checkbox" id="timerCheck"><label for="timerCheck">开启计时（每题 30 秒）</label></div>
+<button class="start-btn" onclick="startQuiz()">开始刷题</button>
+<button class="start-btn secondary" style="margin-top:8px" onclick="startWrongReview()">刷错题本 (<span id="wrongCount">0</span>)</button>
+</div>
+<div id="quiz-area" style="display:none"></div>
+</div>
+
+<div class="page" id="page-learn">
+<p class="section-title">知识卡片（点击翻转）</p>
+<div class="flashcard" id="flashcard" onclick="this.classList.toggle('flipped')">
+<div class="flashcard-inner">
+<div class="flashcard-front"><div class="fc-q" id="fc-front"></div><div class="fc-hint">点击翻转看答案</div></div>
+<div class="flashcard-back"><div class="fc-a" id="fc-back"></div></div>
+</div>
+</div>
+<div class="fc-nav">
+<button onclick="prevCard()">← 上一张</button>
+<span class="fc-count" id="fc-count">1/30</span>
+<button onclick="nextCard()">下一张 →</button>
+</div>
+<div class="learn-section" style="margin-top:30px">
+<h3>RSA 攻击决策树</h3>
+<div class="learn-card"><h4>已知参数 → 攻击方法</h4><p>
+<code>n小(&lt;100位)</code> → factordb/yafu分解<br>
+<code>e=3,无padding,短明文</code> → 直接开立方根<br>
+<code>同n不同e,gcd=1</code> → 共模攻击<br>
+<code>e=3,≥3个不同n</code> → 广播攻击(CRT)<br>
+<code>e很大(≈n位数)</code> → Wiener's Attack<br>
+<code>已知明文高位</code> → Coppersmith<br>
+<code>dp泄露</code> → 枚举gcd得p<br>
+<code>|p-q|很小</code> → Fermat分解<br>
+<code>p-1光滑</code> → Pollard p-1<br>
+<code>φ(n)已知</code> → 解二次方程<br>
+<code>d泄露</code> → 概率分解n<br>
+<code>n=p*q*r</code> → φ=(p-1)(q-1)(r-1)</p></div>
+</div>
+<div class="learn-section">
+<h3>对称加密攻击速查</h3>
+<div class="learn-card"><h4>模式 → 攻击</h4><p>
+<code>ECB</code> → 相同块泄露 / Byte-at-a-Time<br>
+<code>CBC+Oracle</code> → Padding Oracle逐字节<br>
+<code>CBC+可控密文</code> → Bit-Flipping<br>
+<code>CTR+nonce重用</code> → c1⊕c2=m1⊕m2<br>
+<code>GCM+nonce重用</code> → 恢复H伪造tag<br>
+<code>OFB/CFB</code> → keystream复用</p></div>
+</div>
+<div class="learn-section">
+<h3>核心公式</h3>
+<div class="learn-card"><h4>数论 & RSA</h4><div class="formula-box">ext_gcd: ax+by=gcd(a,b)
+mod_inv: a^(-1) mod n [gcd(a,n)=1]
+Fermat: a^(p-1)≡1 (mod p)
+Euler: a^φ(n)≡1 (mod n)
+CRT: x≡ai (mod ni), ni互素
+φ(pq)=(p-1)(q-1)
+RSA: c=m^e mod n, m=c^d mod n
+ed≡1 (mod φ(n))
+共模: s1e1+s2e2=1 → m=c1^s1·c2^s2</div></div>
+<div class="learn-card"><h4>ECC & 格</h4><div class="formula-box">y²=x³+ax+b (mod p)
+点加: λ=(y2-y1)/(x2-x1)
+倍点: λ=(3x1²+a)/(2y1)
+ECDSA: r=(kG).x, s=k⁻¹(z+rd)
+k重用: k=(z1-z2)/(s1-s2)
+LLL: M.LLL() → 近似最短向量
+Coppersmith: f.small_roots(X=...)</div></div>
+</div>
+</div>
+
+<div class="page" id="page-stats">
+<p class="section-title">学习统计</p>
+<div class="stat-grid">
+<div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">总答题</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-correct">0</div><div class="stat-label">答对</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-rate">0%</div><div class="stat-label">正确率</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">最长连对</div></div>
+</div>
+<div class="tab-row">
+<div class="tab-pill active" onclick="showStatTab('history',this)">历史记录</div>
+<div class="tab-pill" onclick="showStatTab('wrong',this)">错题本</div>
+</div>
+<div id="stat-history"><p class="empty-state">暂无记录</p></div>
+<div id="stat-wrong" style="display:none"><p class="empty-state">暂无错题，继续加油！</p></div>
+</div>
+
+<div class="nav">
+<div class="nav-item active" onclick="switchPage('quiz',this)"><span class="icon">✏️</span><span class="label">刷题</span></div>
+<div class="nav-item" onclick="switchPage('learn',this)"><span class="icon">📖</span><span class="label">学习</span></div>
+<div class="nav-item" onclick="switchPage('stats',this)"><span class="icon">📊</span><span class="label">统计</span><span class="badge" id="wrongBadge" style="display:none">0</span></div>
+</div>
+
+<script>
+const Q={
+math:[
+{q:"在模运算中，<code>(17×23) mod 5</code> = ？",opts:["1","2","3","4"],ans:0,diff:"easy",explain:"17 mod 5=2, 23 mod 5=3, 2×3=6, 6 mod 5=1。"},
+{q:"<code>gcd(35, 15)</code> = ？",opts:["1","5","10","15"],ans:1,diff:"easy",explain:"35=2×15+5, 15=3×5+0, gcd=5。"},
+{q:"p=11, q=13，<code>φ(n)</code> = ？",opts:["120","143","100","130"],ans:0,diff:"easy",explain:"φ(n)=(p-1)(q-1)=10×12=120。"},
+{q:"费马小定理：<code>a^(p-1) mod p</code> = ？（p素数,gcd(a,p)=1）",opts:["0","1","a","p-1"],ans:1,diff:"easy",explain:"a^(p-1)≡1 (mod p)，RSA正确性基础。"},
+{q:"<code>pow(2,10,1000)</code> = ？",opts:["24","1024","2","100"],ans:0,diff:"easy",explain:"2^10=1024, 1024 mod 1000=24。"},
+{q:"CRT解决什么问题？",opts:["大数分解","联立同余方程组","离散对数","椭圆曲线点乘"],ans:1,diff:"medium",explain:"x≡a1(mod n1), x≡a2(mod n2)...，ni两两互素。"},
+{q:"<code>e=65537, φ(n)=3120</code>，求d用？",opts:["费马小定理","扩展欧几里得求逆元","CRT","欧拉筛"],ans:1,diff:"medium",explain:"d=e^(-1) mod φ(n)，gmpy2.invert()。"},
+{q:"哪个不是φ(n)的性质？",opts:["φ(p)=p-1","φ(mn)=φ(m)φ(n)(互素)","φ(n)总是偶数(n>2)","φ(n)=n-1对所有n"],ans:3,diff:"medium",explain:"φ(n)=n-1仅n为素数时。φ(4)=2≠3。"},
+{q:"<code>gmpy2.invert(3,7)</code> = ？",opts:["2","3","5","不存在"],ans:2,diff:"medium",explain:"3×5=15=2×7+1，逆元是5。"},
+{q:"快速幂核心思想？",opts:["暴力连乘","反复平方（二进制分解指数）","查表","牛顿迭代"],ans:1,diff:"easy",explain:"a^13=a^8×a^4×a^1，O(log n)。"},
+{q:"已知n和φ(n)，能否恢复p,q？",opts:["不能","能，解二次方程","需额外信息","n<1024才行"],ans:1,diff:"hard",explain:"p+q=n-φ(n)+1，解x²-(p+q)x+n=0。"},
+{q:"<code>φ(12)</code> = ？",opts:["4","6","8","11"],ans:0,diff:"easy",explain:"12=2²×3, φ=12×(1-1/2)×(1-1/3)=4。"},
+{q:"模逆元存在条件？",opts:["a>n","gcd(a,n)=1","n是素数","a是素数"],ans:1,diff:"easy",explain:"a和n互素时逆元存在。"},
+{q:"<code>7^4 mod 13</code> = ？",opts:["1","3","9","12"],ans:2,diff:"medium",explain:"7²=49 mod 13=10, 7^4=100 mod 13=9。"},
+{q:"Miller-Rabin是什么类型？",opts:["确定性","概率性（可能误判）","穷举","基于分解"],ans:1,diff:"medium",explain:"概率性，合数可能误判(≤1/4每轮)，素数永远正确。"},
+{q:"<code>n=p²</code>时φ(n)=？",opts:["p²-1","p(p-1)","(p-1)²","2p"],ans:1,diff:"medium",explain:"φ(p^k)=p^k-p^(k-1)=p²-p=p(p-1)。"},
+{q:"DLP是求什么？",opts:["g^x mod p","x使g^x≡h(mod p)","h^g mod p","p的因子"],ans:1,diff:"medium",explain:"已知g,h,p求x。DH和ElGamal的安全基础。"},
+{q:"<code>lcm(12,18)</code> = ？",opts:["6","36","72","216"],ans:1,diff:"easy",explain:"lcm=12×18/gcd=216/6=36。"},
+{q:"<code>long_to_bytes</code>的作用？",opts:["加密解密","大整数与字节串互转","哈希","Base64"],ans:1,diff:"easy",explain:"RSA中明文需转为整数做模幂。"},
+{q:"5是模11的二次剩余吗？",opts:["是(x=4或7)","不是","无法判断","只有素数才是"],ans:0,diff:"hard",explain:"4²=16≡5(mod 11), 7²=49≡5(mod 11)。"},
+{q:"<code>sympy.factorint(2021)</code> = ？",opts:["{43:1,47:1}","{7:1,17:2}","{2021:1}","{3:1,673:1}"],ans:0,diff:"easy",explain:"2021=43×47。"},
+{q:"欧拉定理与费马的区别？",opts:["欧拉要求n素数","欧拉对任意互素a,n成立，用φ(n)","完全相同","费马更一般"],ans:1,diff:"medium",explain:"费马是欧拉在n为素数时的特例。"},
+{q:"<code>pow(a,-1,n)</code>(Py3.8+)功能？",opts:["a的倒数","a模n的逆元","1/a浮点","报错"],ans:1,diff:"easy",explain:"等价于求模逆元，需gcd(a,n)=1。"},
+{q:"a≡3(mod7), a≡5(mod11), a mod 77=？",opts:["38","52","17","59"],ans:0,diff:"hard",explain:"a=3+7k, 7k≡2(mod11), k≡5, a=38。"},
+{q:"原根定义？",opts:["g^k生成1到p-1所有数","g是p因子","g²≡1","g=p-1"],ans:0,diff:"hard",explain:"g的阶为p-1，幂次遍历所有非零剩余。"},
+{q:"<code>gcd(0,n)</code> = ？",opts:["0","1","n","未定义"],ans:2,diff:"easy",explain:"任何数整除0，gcd(0,n)=n。"},
+{q:"已知p+q和n，求p,q？",opts:["无法","解x²-(p+q)x+n=0","CRT","暴力"],ans:1,diff:"medium",explain:"Δ=(p+q)²-4n=(p-q)²，开方联立。"},
+{q:"<code>bin(255)</code>输出？",opts:["'11111111'","'0b11111111'","255","'0xFF'"],ans:1,diff:"easy",explain:"bin()带'0b'前缀。hex()带'0x'。"}
+],
+classical:[
+{q:"凯撒'KHOOR'偏移3，明文？",opts:["HELLO","WORLD","CRYPT","CIPHER"],ans:0,diff:"easy",explain:"K→H,H→E,O→L,O→L,R→O。"},
+{q:"维吉尼亚核心改进？",opts:["数字加密","多表替换","矩阵运算","随机噪声"],ans:1,diff:"easy",explain:"密钥循环决定偏移，破坏单表频率。"},
+{q:"破解维吉尼亚第一步？",opts:["暴力枚举","Kasiski/IC确定密钥长度","频率分析","已知明文"],ans:1,diff:"medium",explain:"先定长度，再分组频率分析。"},
+{q:"栅栏(2栏)'HLOOL ELRLW'明文？",opts:["HELLO WORLD","HELLOWORLD","HLOOLELRLW","WORLDHELLO"],ans:0,diff:"easy",explain:"奇偶位交替合并。"},
+{q:"仿射E(x)=(5x+8)mod26解密需？",opts:["5的模26逆元","8的逆元","直接减8","都要"],ans:0,diff:"medium",explain:"D(y)=5⁻¹(y-8)mod26, 5⁻¹=21。"},
+{q:"Hill密码用什么？",opts:["异或","矩阵乘法mod26","椭圆曲线","多项式"],ans:1,diff:"medium",explain:"明文向量×密钥矩阵mod26。"},
+{q:"不能破单表替换的是？",opts:["频率分析","IC","Kasiski","卡方检验"],ans:2,diff:"medium",explain:"Kasiski用于多表替换。"},
+{q:"培根密码编码？",opts:["5位A/B二进制","摩尔斯变体","Base32","ASCII"],ans:0,diff:"easy",explain:"5位一组编码一个字母。"},
+{q:"Atbash规则？",opts:["A↔Z,B↔Y...","偏移13","反转","随机"],ans:0,diff:"easy",explain:"字母表镜像，对合操作。"},
+{q:"'AAAAAB AABAA'最可能？",opts:["摩尔斯","培根密码","二进制","栅栏"],ans:1,diff:"easy",explain:"5位A/B组合是培根特征。"},
+{q:"ROT13特殊性质？",opts:["不可逆","加解密同一操作","只能加密数字","需密钥"],ans:1,diff:"easy",explain:"偏移13=26/2，自逆。"},
+{q:"列置换密钥是？",opts:["列数和排列顺序","单词","矩阵","偏移量"],ans:0,diff:"medium",explain:"按列写入，按密钥顺序读出。"},
+{q:"Playfair按什么单位加密？",opts:["单字母","双字母组","三字母","单词"],ans:1,diff:"medium",explain:"5×5矩阵，每次处理digraph。"},
+{q:"ADFGVX用哪6个字符？",opts:["ABCDEF","ADFGVX","012345","ABCDVX"],ans:1,diff:"medium",explain:"摩尔斯电码中差异大，不易听错。"},
+{q:"IC≈0.065最可能是？",opts:["随机文本","单表替换/明文","维吉尼亚","Base64"],ans:1,diff:"medium",explain:"英文IC≈0.065，随机≈0.038。"},
+{q:"猪圈密码特征？",opts:["几何图形代替字母","动物名编码","5位二进制","矩阵"],ans:0,diff:"easy",explain:"井字格和X格的边/角表示字母。"},
+{q:"摩尔斯'SOS'？",opts:["... --- ...","--- ... ---","... ... ...","--- --- ---"],ans:0,diff:"easy",explain:"S=三点,O=三划。"},
+{q:"'1225 0805'最可能？",opts:["RSA","A1Z26编码","十六进制","坐标"],ans:1,diff:"easy",explain:"两位一组对应字母序号。"},
+{q:"维吉尼亚密钥KEY,明文H,密文首字母？",opts:["R","H","K","E"],ans:0,diff:"medium",explain:"H(7)+K(10)=17→R。"},
+{q:"属于转置密码的是？",opts:["凯撒","维吉尼亚","栅栏","仿射"],ans:2,diff:"easy",explain:"转置只重排位置不替换。"},
+{q:"'01001000 01000101'最可能？",opts:["摩尔斯","ASCII二进制","培根","Base2"],ans:1,diff:"easy",explain:"8位一组ASCII：H,E..."},
+{q:"Enigma核心部件不包括？",opts:["转子","反射器","S盒","接线板"],ans:2,diff:"medium",explain:"S盒是AES的。Enigma=转子+反射器+接线板。"},
+{q:"维吉尼亚密文高频W对应明文E，密钥字母？",opts:["S","W","E","K"],ans:0,diff:"hard",explain:"W(22)-E(4)=18→S。"},
+{q:"Base64中3字节→几字符？",opts:["2","3","4","6"],ans:2,diff:"easy",explain:"3字节24位→4个6位组→4字符。"},
+{q:"'U2FsdGVkX1'开头是？",opts:["普通Base64","OpenSSL加密(Salted__)","RSA","AES密钥"],ans:1,diff:"medium",explain:"解码为'Salted__'，OpenSSL enc格式。"},
+{q:"Atbash解密'GSRH RH Z HVXIVG'？",opts:["THIS IS A SECRET","HELLO WORLD","CTF IS FUN","ATBASH CODE"],ans:0,diff:"easy",explain:"G→T,S→H,R→I,H→S..."}
+],
+rsa:[
+{q:"RSA加密公式？",opts:["c=m^d mod n","c=m^e mod n","c=m×e mod n","c=m+e mod n"],ans:1,diff:"easy",explain:"公钥(e,n)加密，私钥d解密。"},
+{q:"n=33,e=3,m=5,c=？",opts:["26","14","5","8"],ans:0,diff:"easy",explain:"5³=125 mod 33=26。"},
+{q:"共模攻击条件？",opts:["同e不同n","同n不同e,gcd(e1,e2)=1","同d","n小"],ans:1,diff:"medium",explain:"s1e1+s2e2=1, m=c1^s1·c2^s2。"},
+{q:"广播攻击(e=3)至少几个n？",opts:["2","3","4","5"],ans:1,diff:"medium",explain:"CRT合并后m³<N，开立方根。"},
+{q:"Wiener适用？",opts:["e小","d小(d<n^0.25/3)","p≈q","n偶"],ans:1,diff:"medium",explain:"e/n连分数收敛子含k/d。"},
+{q:"dp泄露攻击？",opts:["无法","枚举gcd(a^(e·dp-1)-1,n)","直接得d","需dq"],ans:1,diff:"hard",explain:"a^(e·dp)≡a(mod p)，gcd得p。"},
+{q:"Fermat分解适用？",opts:["n偶","p和q很接近","e=3","d已知"],ans:1,diff:"medium",explain:"n=a²-b²，从⌈√n⌉搜索。"},
+{q:"Coppersmith最常见场景？",opts:["分解素数","已知明文高/低位","离散对数","破AES"],ans:1,diff:"hard",explain:"格上LLL求小根，small_roots()。"},
+{q:"RSA签名验证？",opts:["m=s^e mod n","m=s^d mod n","s=m^e mod n","s=m+d"],ans:0,diff:"easy",explain:"签名用d，验证用e。"},
+{q:"哪种RSA最易破？",opts:["e=65537,n=2048位","e=3,无padding,短明文","OAEP","n=4096位"],ans:1,diff:"medium",explain:"m³<n没取模，直接开方。"},
+{q:"p=q时？",opts:["更安全","n是完全平方数","无法加密","e不存在"],ans:1,diff:"easy",explain:"isqrt(n)直接得p。"},
+{q:"n=p*q*r时φ(n)=？",opts:["(p-1)(q-1)(r-1)","pqr-1","(p+1)(q+1)(r+1)","pq+r"],ans:0,diff:"medium",explain:"各素因子减1相乘。"},
+{q:"e必须满足？",opts:["e是素数","gcd(e,φ(n))=1","e<n","e是奇数"],ans:1,diff:"easy",explain:"否则d不存在。"},
+{q:"Hastad广播用什么？",opts:["费马","CRT","扩展欧几里得","欧拉函数"],ans:1,diff:"hard",explain:"e个不同n的密文CRT合并开e次方。"},
+{q:"Franklin-Reiter条件？",opts:["明文相同","m2=a·m1+b线性关系","明文是英文","e大"],ans:1,diff:"hard",explain:"求两个多项式GCD恢复m1。"},
+{q:"d泄露能否分解n？",opts:["不能","能，概率算法","只能解密","需额外信息"],ans:1,diff:"hard",explain:"ed-1是φ(n)倍数，随机a的平方根链分解。"},
+{q:"RsaCtfTool是？",opts:["加密工具","自动化RSA攻击集合","密钥生成","抓包"],ans:1,diff:"easy",explain:"自动尝试多种已知攻击。"},
+{q:"n推荐最小长度？",opts:["512","1024","2048","256"],ans:2,diff:"easy",explain:"NIST推荐≥2048位。"},
+{q:"PKCS#1 v1.5加密格式？",opts:["00||02||随机非零||00||M","M||随机","01||M||00","纯随机"],ans:0,diff:"medium",explain:"02开头加密，01开头签名。"},
+{q:"Bleichenbacher针对？",opts:["AES-CBC","RSA PKCS#1 v1.5 padding oracle","ECDSA","哈希"],ans:1,diff:"hard",explain:"利用padding区分逐步缩小明文。"},
+{q:"m>n时？",opts:["报错","信息丢失(加密m mod n)","自动扩展","正常"],ans:1,diff:"medium",explain:"RSA要求m<n。"},
+{q:"n只有50位十进制，第一步？",opts:["Wiener","直接分解n","Coppersmith","广播"],ans:1,diff:"easy",explain:"factordb/sympy秒分解。"},
+{q:"λ(n)是什么？",opts:["φ(n)","lcm(p-1,q-1)","n-1","p+q"],ans:1,diff:"hard",explain:"Carmichael函数，使a^λ≡1的最小指数。"},
+{q:"e=1时密文=？",opts:["0","m本身","n","随机"],ans:1,diff:"easy",explain:"c=m^1=m，等于没加密。"},
+{q:"OAEP优势？",opts:["更快","可证明安全(随机化防Bleichenbacher)","密钥短","无padding"],ans:1,diff:"medium",explain:"随机化padding，随机预言模型下安全。"},
+{q:"n以0xdeadbeef开头暗示？",opts:["n素数","高位已知→Coppersmith","n小","假n"],ans:1,diff:"medium",explain:"已知高位是Coppersmith典型场景。"},
+{q:"p-1光滑用什么？",opts:["Wiener","Pollard p-1","Fermat","广播"],ans:1,diff:"hard",explain:"a^(B!) mod n, gcd得p。"},
+{q:"同n不同e给c1,c2最可能？",opts:["广播","共模","Wiener","Fermat"],ans:1,diff:"easy",explain:"共模攻击。"},
+{q:"CRT加速解密原理？",opts:["直接c^d","分别mod p和mod q再合并","用e代d","减小n"],ans:1,diff:"medium",explain:"模数减半，速度×4。"},
+{q:"给了n,e,d,c最直接？",opts:["分解n","m=pow(c,d,n)","Wiener","不需c"],ans:1,diff:"easy",explain:"有d直接解密。"},
+{q:"Boneh-Durfee改进什么？",opts:["共模","Wiener(放宽d界到n^0.292)","广播","Fermat"],ans:1,diff:"hard",explain:"格方法放宽Wiener的d界。"},
+{q:"φ(n)和λ(n)关系？",opts:["相同","λ|φ","φ|λ","互素"],ans:1,diff:"hard",explain:"lcm整除乘积。"}
+],
+symmetric:[
+{q:"AES分组长度？",opts:["64位","128位","256位","512位"],ans:1,diff:"easy",explain:"固定128位(16字节)。"},
+{q:"ECB最大问题？",opts:["慢","相同明文块→相同密文块","需IV","不并行"],ans:1,diff:"easy",explain:"泄露数据模式。"},
+{q:"CBC中IV作用？",opts:["加速","相同明文→不同密文","替代密钥","压缩"],ans:1,diff:"easy",explain:"随机化首块。"},
+{q:"Padding Oracle利用？",opts:["密钥","padding是否合法的错误信息","时间","长度"],ans:1,diff:"medium",explain:"逐字节推断中间值。"},
+{q:"CBC Bit-Flipping能？",opts:["恢复密钥","不解密改明文字节","伪造MAC","加速"],ans:1,diff:"medium",explain:"改C[i]→P[i+1]对应位翻转。"},
+{q:"CTR本质变成？",opts:["哈希","流密码","签名","密钥交换"],ans:1,diff:"medium",explain:"加密计数器异或明文。"},
+{q:"DES有效密钥？",opts:["128","64","56","32"],ans:2,diff:"easy",explain:"64位中8位校验，有效56。"},
+{q:"最危险情况？",opts:["CBC随机IV","CTR重用nonce","GCM唯一nonce","ECB随机数据"],ans:1,diff:"hard",explain:"c1⊕c2=m1⊕m2。"},
+{q:"GCM比CBC多什么？",opts:["更快","认证(完整性)","更长密钥","不需IV"],ans:1,diff:"medium",explain:"CTR+GMAC=AEAD。"},
+{q:"Byte-at-a-Time前提？",opts:["知密钥","Oracle+ECB","密文短","AES-256"],ans:1,diff:"hard",explain:"控制前缀观察密文逐字节爆破。"},
+{q:"AES一轮不包括？",opts:["SubBytes","ShiftRows","MixColumns","Feistel"],ans:3,diff:"medium",explain:"Feistel是DES的。"},
+{q:"AES S盒基于？",opts:["简单查表","GF(2^8)逆元+仿射","mod26","XOR"],ans:1,diff:"hard",explain:"有限域逆元提供非线性。"},
+{q:"OFB vs CFB？",opts:["OFB加密反馈","OFB对输出加密,CFB对密文加密","相同","OFB无IV"],ans:1,diff:"hard",explain:"OFB密钥流与明文无关。"},
+{q:"3DES方式？",opts:["同密钥三次","EDE(加密-解密-加密)","并行","DES+AES"],ans:1,diff:"medium",explain:"中间解密兼容单DES。"},
+{q:"RC4主要问题？",opts:["太慢","初始密钥流统计偏差","密钥短","不支持"],ans:1,diff:"medium",explain:"前256字节有偏差，TLS已禁。"},
+{q:"PKCS7:16字节组,13字节明文填？",opts:["3个0x03","3个0x00","16个0x03","13个0x03"],ans:0,diff:"easy",explain:"填N个值N。"},
+{q:"IV全0+相同首块→？",opts:["无影响","首块密文相同","解密失败","密钥泄露"],ans:1,diff:"medium",explain:"C[0]=E(P[0])，泄露信息。"},
+{q:"XTS用于？",opts:["网络","磁盘加密","压缩","签名"],ans:1,diff:"medium",explain:"每扇区独立，支持随机读写。"},
+{q:"AES-256比128多几轮？",opts:["2","4","6","8"],ans:1,diff:"easy",explain:"10轮→14轮。"},
+{q:"Padding Oracle解密最后块改哪个？",opts:["最后块","倒数第二块","IV","第一块"],ans:1,diff:"hard",explain:"改C[n-1]影响P[n]的padding。"},
+{q:"Feistel结构意味？",opts:["加解密不同算法","结构相同子密钥逆序","只能加密","两密钥"],ans:1,diff:"medium",explain:"解密子密钥反序即可。"},
+{q:"ECB+可控输入+固定后缀flag？",opts:["暴力密钥","Byte-at-a-Time","Padding Oracle","长度扩展"],ans:1,diff:"hard",explain:"调整长度逐字节爆破。"},
+{q:"nonce vs IV？",opts:["相同","nonce唯一即可,IV需随机","nonce更长","IV用于流"],ans:1,diff:"medium",explain:"CTR/GCM用nonce，CBC用IV。"},
+{q:"不是分组模式的是？",opts:["ECB","CBC","RSA","CTR"],ans:2,diff:"easy",explain:"RSA是非对称算法。"},
+{q:"ChaCha20属于？",opts:["分组","流密码","哈希","非对称"],ans:1,diff:"medium",explain:"软件高效流密码，Google推广。"},
+{q:"CBC中C[i]篡改一位影响？",opts:["只P[i]","P[i]和P[i+1]","所有后续","不影响"],ans:1,diff:"hard",explain:"P[i]随机化，P[i+1]对应位翻转。"}
+],
+hash:[
+{q:"MD5输出长度？",opts:["64","128","256","512"],ans:1,diff:"easy",explain:"128位=16字节=32hex。"},
+{q:"长度扩展适用？",opts:["SHA-3","MD结构(MD5,SHA1)","HMAC","所有"],ans:1,diff:"medium",explain:"Sponge和HMAC不受影响。"},
+{q:"HMAC防扩展原因？",opts:["密钥长","双重哈希结构含secret","用SHA-3","输出长"],ans:1,diff:"hard",explain:"外层含secret无法伪造。"},
+{q:"哈希碰撞？",opts:["同输入不同输出","不同输入相同输出","输出全0","哈希=输入"],ans:1,diff:"easy",explain:"鸽巢原理，碰撞必然存在。"},
+{q:"生日攻击复杂度？",opts:["O(2^n)","O(2^(n/2))","O(n)","O(n²)"],ans:1,diff:"medium",explain:"n位哈希→2^(n/2)次。"},
+{q:"H(secret+msg)且MD5→？",opts:["暴力secret","长度扩展","碰撞","预映像"],ans:1,diff:"medium",explain:"hash_extender构造合法扩展。"},
+{q:"不是哈希必要性质？",opts:["抗原像","抗第二原像","抗碰撞","可逆性"],ans:3,diff:"easy",explain:"哈希必须单向不可逆。"},
+{q:"SHA-256结构？",opts:["Sponge","MD","Feistel","SPN"],ans:1,diff:"medium",explain:"SHA-3才是Sponge。"},
+{q:"SHAttered哪年？",opts:["2005","2017","2020","2010"],ans:1,diff:"medium",explain:"2017 Google/CWI实际SHA1碰撞。"},
+{q:"雪崩效应？",opts:["输出很长","改1位→约50%位变","多次叠加","并行"],ans:1,diff:"easy",explain:"好哈希的基本特征。"},
+{q:"md5(a)==md5(b)且a≠b如何构造？",opts:["暴力","fastcoll碰撞工具","不可能","改算法"],ans:1,diff:"medium",explain:"MD5碰撞可快速生成。"},
+{q:"md5(a)==a(不动点)？",opts:["数学解","暴力(概率极低)","不存在","碰撞工具"],ans:1,diff:"hard",explain:"理论存在但极难，CTF通常是trick。"},
+{q:"SHA-3结构？",opts:["MD","Sponge","Feistel","Merkle Tree"],ans:1,diff:"medium",explain:"吸收+挤压，天然抗长度扩展。"},
+{q:"PHP md5弱类型？",opts:["碰撞","0e开头当科学计数法=0","bug","编码"],ans:1,diff:"medium",explain:"用===或sha256防。"},
+{q:"Merkle Tree用途？",opts:["加密","高效验证数据完整性","压缩","生成密钥"],ans:1,diff:"medium",explain:"O(log n)验证，区块链/Git用。"},
+{q:"预映像攻击？",opts:["找碰撞","给定H找任意m'匹配","加速","找两相同"],ans:1,diff:"medium",explain:"给定目标哈希找输入。"},
+{q:"hexdigest()输出？",opts:["bytes","32字符hex","Base64","整数"],ans:1,diff:"easy",explain:"128位=32个hex字符。"},
+{q:"密码存储为何用bcrypt不用MD5？",opts:["MD5太慢","KDF有意设计慢抗暴力破解","MD5短","SHA不安全"],ans:1,diff:"medium",explain:"MD5太快，攻击者暴力也快。"},
+{q:"H(H(secret||msg)||append)能扩展吗？",opts:["能","不能,外层阻断","看长度","需secret"],ans:1,diff:"hard",explain:"双层结构有效防御。"},
+{q:"SHA256输出几字节？",opts:["16","32","64","128"],ans:1,diff:"easy",explain:"256位=32字节。"},
+{q:"int(md5.hexdigest(),16)作用？",opts:["加密","转大整数用于数值运算","压缩","签名"],ans:1,diff:"easy",explain:"取模/比较/伪随机。"},
+{q:"抗碰撞vs抗原像哪个更难实现？",opts:["抗碰撞","抗原像","相同","看实现"],ans:1,diff:"hard",explain:"抗原像O(2^n)，抗碰撞O(2^(n/2))。"}
+],
+ecc:[
+{q:"P+P叫？",opts:["点乘","点倍点","点逆","点交换"],ans:1,diff:"easy",explain:"doubling，标量乘法基本操作。"},
+{q:"ECC基于？",opts:["大数分解","ECDLP","格SVP","背包"],ans:1,diff:"easy",explain:"256位ECC≈3072位RSA。"},
+{q:"ECDSA k重用→？",opts:["无影响","恢复私钥","变慢","重新生成"],ans:1,diff:"medium",explain:"联立解k再求d。Sony PS3。"},
+{q:"4a³+27b²=0意味？",opts:["a=0","曲线奇异不安全","b=0","安全"],ans:1,diff:"medium",explain:"ECDLP可映射到加法/乘法群。"},
+{q:"Smart's Attack适用？",opts:["所有","anomalous(#E=p)","超奇异","随机"],ans:1,diff:"hard",explain:"p-adic提升→多项式时间。"},
+{q:"ECDH Alice发什么？",opts:["私钥","公钥aP","共享密钥","随机数"],ans:1,diff:"easy",explain:"各自算abP。"},
+{q:"小阶攻击利用？",opts:["参数小","阶有小因子→小子群暴力","坐标小","p小"],ans:1,diff:"hard",explain:"映射到r阶子群+CRT。"},
+{q:"CTF最常见曲线？",opts:["secp256k1","Curve25519","自定义小参数","P-521"],ans:2,diff:"medium",explain:"小p或有特殊结构。"},
+{q:"P+(-P)=？",opts:["2P","无穷远点O","(0,0)","未定义"],ans:1,diff:"easy",explain:"群的单位元。"},
+{q:"ECDSA中r=？",opts:["k⁻¹(z+sd)","(kG).x mod n","H(m)","s^e"],ans:1,diff:"medium",explain:"kG的x坐标mod n。"},
+{q:"超奇异曲线特征？",opts:["a=0","嵌入度小→MOV攻击","p小","阶素数"],ans:1,diff:"hard",explain:"映射到有限域DLP。"},
+{q:"Curve25519形式？",opts:["Weierstrass","Montgomery","Edwards","随机"],ans:1,diff:"medium",explain:"By²=x³+Ax²+x。"},
+{q:"EdDSA优势不包括？",opts:["确定性(无随机k)","更快","避免DLP","抗侧信道"],ans:2,diff:"hard",explain:"仍基于ECDLP，没有避免。"},
+{q:"标量乘法kP用？",opts:["暴力加k次","double-and-add","查表","FFT"],ans:1,diff:"easy",explain:"O(log k)次点运算。"},
+{q:"p<2^64如何攻击？",opts:["无法","BSGS/SageMath DLP","Wiener","Fermat"],ans:1,diff:"medium",explain:"阶小，BSGS O(√n)。"},
+{q:"#E(Fp)用什么算？",opts:["暴力数","Schoof/SEA","费马","CRT"],ans:1,diff:"hard",explain:"SageMath: E.order()。"},
+{q:"Invalid Curve Attack？",opts:["参数错","不验证点在曲线上","密钥短","碰撞"],ans:1,diff:"hard",explain:"发小阶曲线上的点+CRT。"},
+{q:"ECDH不验证公钥→？",opts:["暴力","MITM","长度扩展","Padding"],ans:1,diff:"easy",explain:"替换公钥解密通信。"},
+{q:"SageMath建曲线？",opts:["EllipticCurve(GF(p),[a,b])","Curve(p,a,b)","ECC(p,a,b)","new EC"],ans:0,diff:"easy",explain:"E=EllipticCurve(GF(p),[a,b])。"},
+{q:"基点G阶为何要大素数？",opts:["加速","防小阶子群攻击","减小密钥","兼容"],ans:1,diff:"medium",explain:"大素数阶确保DLP困难。"},
+{q:"y²=x³(mod p)是？",opts:["安全","奇异(cusp)→映射加法群","标准","Montgomery"],ans:1,diff:"hard",explain:"x/y映射到(Fp,+)，trivial。"},
+{q:"Edwards曲线加法优势？",opts:["更慢","统一公式抗侧信道","无模运算","密钥短"],ans:1,diff:"hard",explain:"complete公式，执行路径相同。"}
+],
+lattice:[
+{q:"格定义？",opts:["随机点","基向量整数线性组合的离散点集","连续空间","矩阵"],ans:1,diff:"medium",explain:"L={Σzi·bi | zi∈Z}。"},
+{q:"LLL解决？",opts:["大数分解","格归约(近似最短向量)","离散对数","碰撞"],ans:1,diff:"medium",explain:"归约为近似正交短基。"},
+{q:"SVP是？",opts:["最短向量问题","最大向量","向量加法","矩阵逆"],ans:0,diff:"easy",explain:"格中找非零最短向量。"},
+{q:"Coppersmith在CTF中？",opts:["分解n","模n下找多项式小根","离散对数","破AES"],ans:1,diff:"hard",explain:"|x0|<n^(1/δ)时格方法高效。"},
+{q:"SageMath调LLL？",opts:["M.LLL()","lattice_reduce()","LLL.solve()","shortest()"],ans:0,diff:"easy",explain:"矩阵.LLL()返回归约基。"},
+{q:"Knapsack被什么破？",opts:["暴力","LLL(低密度)","频率","长度扩展"],ans:1,diff:"medium",explain:"密度<0.9408时格可破。"},
+{q:"NTRU基于？",opts:["大数分解","格SVP/CVP","ECDLP","DLP"],ans:1,diff:"medium",explain:"后量子候选之一。"},
+{q:"格攻击适用场景？",opts:["所有题","Coppersmith/Knapsack/LCG/HNP","只RSA","只ECC"],ans:1,diff:"medium",explain:"多种场景。"},
+{q:"LCG已知连续输出能预测？",opts:["不能","能,恢复a,c,m","需密钥","需m"],ans:1,diff:"medium",explain:"≥6个输出构造格。"},
+{q:"MT19937问题？",opts:["周期短","624输出可预测全部","密钥短","碰撞"],ans:1,diff:"medium",explain:"tempering可逆，克隆状态。"},
+{q:"Shamir恢复需？",opts:["1个","t个(阈值)","所有","2个"],ans:1,diff:"easy",explain:"t个点拉格朗日插值。"},
+{q:"随机数预测第一步？",opts:["暴力","判断PRNG类型","放弃","格"],ans:1,diff:"easy",explain:"LCG/MT/自定义各有方法。"},
+{q:"嵌入技巧？",opts:["把问题嵌入大格使目标成最短向量","加密","压缩","删除"],ans:0,diff:"hard",explain:"CVP→SVP转化。"},
+{q:"LCG已知x1,x2,x3求a？",opts:["无法","(x3-x2)/(x2-x1) mod m","暴力","LLL"],ans:1,diff:"medium",explain:"相消c后求逆元。"},
+{q:"后量子格方案？",opts:["RSA,ECC","Kyber,Dilithium","AES,SHA","DES"],ans:1,diff:"medium",explain:"NIST标准，基于MLWE。"},
+{q:"small_roots()前提？",opts:["f线性","f在Zmod(n)上且根小","n素数","次数1"],ans:1,diff:"hard",explain:"Coppersmith方法。"},
+{q:"Z_n上仿射密码？",opts:["维吉尼亚","E(x)=ax+b mod n","RSA","Hill"],ans:1,diff:"easy",explain:"gcd(a,n)=1。"},
+{q:"random模块能用于密码学？",opts:["可以","不能,MT可预测","看情况","种子未知才行"],ans:1,diff:"easy",explain:"用secrets/os.urandom。"},
+{q:"secrets vs random？",opts:["没区别","secrets用CSPRNG","random更安全","secrets慢不安全"],ans:1,diff:"easy",explain:"secrets底层os.urandom。"},
+{q:"CVP是？",opts:["最近向量问题","最远","计数","排序"],ans:0,diff:"easy",explain:"找格中离目标最近的点。"},
+{q:"已知随机数高位恢复？",opts:["暴力","格(Coppersmith/嵌入)","频率","CRT"],ans:1,diff:"hard",explain:"构造多项式找小根。"},
+{q:"HNP出现在？",opts:["RSA","ECDSA(部分k泄露)","哈希","古典"],ans:1,diff:"hard",explain:"格方法恢复完整k→私钥。"},
+{q:"os.urandom(16)返回？",opts:["16位整数","16字节CSPRNG","16字母","Base64"],ans:1,diff:"easy",explain:"OS熵源，密码学安全。"},
+{q:"XOR已知部分明文→？",opts:["无法","P⊕C=K(keystream)","暴力","格"],ans:1,diff:"easy",explain:"XOR性质直接恢复。"}
+]
+};
+
+const flashcards=[
+{q:"RSA中φ(n)怎么算？",a:"n=p×q: φ=(p-1)(q-1)\n多素数: φ=∏(pi-1)\np^k: φ=p^k-p^(k-1)"},
+{q:"共模攻击？",a:"同m同n不同e, gcd(e1,e2)=1\ns1e1+s2e2=1\nm=c1^s1·c2^s2 mod n\ns负→先求逆元"},
+{q:"Wiener信号与方法？",a:"e位数≈n → d可能小\ne/n连分数展开\n逐收敛子试k/d\n验证解密"},
+{q:"Padding Oracle？",a:"服务器区分padding错误\nCBC从最后块逐字节\n改C[n-1]使padding合法\nI=D(C[n]), P=I⊕C[n-1]"},
+{q:"长度扩展？",a:"H(secret||msg)已知\nMD结构(MD5/SHA1)\n知secret长度(可爆)\nhash_extender\nSHA-3/HMAC免疫"},
+{q:"ECB攻击？",a:"相同块→相同密文\nByte-at-a-Time:\n调前缀使目标落块尾\n暴力256次比对"},
+{q:"CTR nonce重用？",a:"c1⊕c2=m1⊕m2\n知一个明文→恢复另一个\nGCM重用→伪造tag\n永不重用！"},
+{q:"ECDSA k重用？",a:"s1=k⁻¹(z1+rd)\ns2=k⁻¹(z2+rd)\nk=(z1-z2)/(s1-s2)\nd=(s1k-z1)/r"},
+{q:"Fermat分解？",a:"|p-q|小\nn=a²-b²\na=⌈√n⌉递增\nb=√(a²-n)\np=a-b, q=a+b"},
+{q:"Coppersmith？",a:"已知明文高/低位\nSageMath:\nf=x+known\nf=f.change_ring(Zmod(n))\nf.small_roots(X=2^bits)"},
+{q:"维吉尼亚破解？",a:"1.Kasiski/IC求长度\n2.按长度分组\n3.每组频率分析\n4.高频=E求密钥\n5.验证"},
+{q:"dp泄露？",a:"dp=d mod (p-1)\na^(e·dp-1)-1是p倍数\n枚举a=2,3...\ngcd(…,n)=p"},
+{q:"广播攻击(e=3)？",a:"≥3个不同n\nCRT: m³ mod N\nm<ni → m³<N\niroot(result,3)"},
+{q:"AES模式一句话？",a:"ECB:独立,泄露模式\nCBC:链式,需IV\nCTR:计数器,禁重用\nGCM:AEAD\nOFB/CFB:流式"},
+{q:"HMAC？",a:"H(k⊕opad||H(k⊕ipad||msg))\nipad=0x36,opad=0x5c\n外层含secret\n比H(k||msg)安全"},
+{q:"Anomalous+Smart？",a:"#E(Fp)=p\np-adic提升到Qp\nECDLP→Fp上DLP\n多项式时间"},
+{q:"生日攻击？",a:"n位: O(2^(n/2))\nMD5→2^64\nSHA256→2^128\nMD5已完全破"},
+{q:"LLL与用途？",a:"格归约→近似最短\nM.LLL()\nCoppersmith/Knapsack\nLCG/HNP/NTRU"},
+{q:"低指数信号？",a:"e=3无padding\nm³<n→没取模\niroot(c,3)\n有padding→Coppersmith"},
+{q:"MT19937？",a:"624输出→克隆状态\nuntemper可逆\n之后全部可预测\n禁用random模块"},
+{q:"RSA第一步判断？",a:"n小→分解\ne小→开方/广播\ne大→Wiener\n同n不同e→共模\ndp→gcd\n|p-q|小→Fermat"},
+{q:"GCM nonce重用？",a:"恢复J0和H\n伪造任意tag\n完全破坏认证\n比CTR更严重"},
+{q:"SageMath ECC？",a:"E=EllipticCurve(GF(p),[a,b])\nE.order()\nP+Q, 2*P\ndiscrete_log(Q,P)"},
+{q:"PKCS#1 v1.5？",a:"加密:00||02||随机||00||M\n签名:00||01||FF||00||H\nBleichenbacher\nOAEP替代"},
+{q:"格攻击场景？",a:"Coppersmith\nKnapsack(低密度)\nLCG/PRNG预测\nHNP(ECDSA)\n近似GCD/NTRU"},
+{q:"CBC Bit-Flip？",a:"改P[i+1]某字节\nC[i]^=original^target\nP[i]随机化(副作用)\n需能忽略P[i]"},
+{q:"Pollard p-1？",a:"p-1是B-光滑\na^(B!) mod n\ngcd(a^(B!)-1,n)=p\ngmpy2实现"},
+{q:"Shamir？",a:"秘密=f(0), t-1次多项式\n分发n个点\n任意t个→插值\n<t个→信息论安全"},
+{q:"PHP MD5陷阱？",a:"0e开头→科学计数法=0\n==比较时相等\n用===或sha256"},
+{q:"比赛解题流程？",a:"1.判断类型\n2.提取参数\n3.对照决策树\n4.套模板\n5.卡20min换题\n6.拿flag提交"}
+];
+
+let currentCat='math',quizQuestions=[],currentQ=0,score=0,answered=false,quizMode=5,timerOn=false,timerInterval=null,timeLeft=30,totalTime=0;
+let stats={total:0,correct:0,maxStreak:0,currentStreak:0,history:[],wrong:[],dailyDone:null};
+let fcIndex=0;
+
+function load(){try{const s=JSON.parse(localStorage.getItem('ctf-v3'));if(s)stats=s;}catch(e){}updateUI();}
+function save(){try{localStorage.setItem('ctf-v3',JSON.stringify(stats));}catch(e){}}
+function switchPage(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');el.classList.add('active');}
+function selectCat(el){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');currentCat=el.dataset.cat;}
+function selectMode(el){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');quizMode=el.dataset.mode;}
+function getPool(cat){if(cat==='mixed'){let p=[];Object.values(Q).forEach(a=>p.push(...a));return p;}return Q[cat]||[];}
+
+function startQuiz(){
+  const pool=getPool(currentCat);
+  const count=quizMode==='all'?pool.length:Math.min(parseInt(quizMode),pool.length);
+  quizQuestions=shuffle([...pool]).slice(0,count);
+  beginQuiz(false);
+}
+function startDaily(){
+  const today=new Date().toDateString();
+  if(stats.dailyDone===today){alert('今日已完成！明天再来');return;}
+  let pool=[];Object.values(Q).forEach(a=>pool.push(...a));
+  quizQuestions=shuffle(pool).slice(0,5);
+  currentCat='mixed';
+  beginQuiz(true);
+}
+function startWrongReview(){
+  if(!stats.wrong.length){alert('错题本为空，太棒了！');return;}
+  quizQuestions=shuffle([...stats.wrong]).slice(0,Math.min(10,stats.wrong.length));
+  currentCat='mixed';
+  beginQuiz(false);
+}
+function beginQuiz(isDaily){
+  currentQ=0;score=0;answered=false;totalTime=0;
+  timerOn=document.getElementById('timerCheck').checked;
+  document.getElementById('quiz-select').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  renderQuestion(isDaily);
+}
+function renderQuestion(isDaily){
+  if(currentQ>=quizQuestions.length){showResult(isDaily);return;}
+  const q=quizQuestions[currentQ];answered=false;
+  const letters=['A','B','C','D'];
+  let timerHtml=timerOn?`<div class="timer-bar show"><span style="font-size:12px;color:var(--text2)">⏱ 剩余</span><span class="time" id="timerDisplay">30</span></div>`:'';
+  let html=timerHtml+`<div class="question-card"><div class="q-header"><span class="q-num">第 ${currentQ+1}/${quizQuestions.length} 题</span><span class="q-diff ${q.diff}">${q.diff==='easy'?'简单':q.diff==='medium'?'中等':'困难'}</span></div><div class="q-text">${q.q}</div><div class="q-options">`;
+  q.opts.forEach((o,i)=>{html+=`<div class="q-opt" onclick="checkAnswer(${i})" id="opt-${i}"><span class="opt-letter">${letters[i]}</span><span>${o}</span></div>`;});
+  html+=`</div><div class="q-explain" id="q-explain"><b>解析：</b>${q.explain}</div><button class="next-btn" id="next-btn" onclick="nextQuestion(${isDaily})">下一题 →</button></div>`;
+  document.getElementById('quiz-area').innerHTML=html;
+  if(timerOn)startTimer();
+}
+function startTimer(){
+  clearInterval(timerInterval);timeLeft=30;
+  const el=document.getElementById('timerDisplay');
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    if(el){el.textContent=timeLeft;if(timeLeft<=10)el.classList.add('danger');}
+    if(timeLeft<=0){clearInterval(timerInterval);if(!answered)timeUp();}
+  },1000);
+}
+function timeUp(){
+  answered=true;
+  const q=quizQuestions[currentQ];
+  document.querySelectorAll('.q-opt').forEach(o=>o.classList.add('disabled'));
+  document.getElementById('opt-'+q.ans).classList.add('correct');
+  stats.currentStreak=0;stats.total++;
+  addWrong(q,-1);
+  document.getElementById('q-explain').classList.add('show');
+  document.getElementById('next-btn').classList.add('show');
+  save();updateUI();
+}
+function checkAnswer(idx){
+  if(answered)return;answered=true;
+  clearInterval(timerInterval);
+  const q=quizQuestions[currentQ];
+  document.querySelectorAll('.q-opt').forEach(o=>o.classList.add('disabled'));
+  if(idx===q.ans){
+    document.getElementById('opt-'+idx).classList.add('correct');
+    score++;stats.correct++;stats.currentStreak++;
+    if(stats.currentStreak>stats.maxStreak)stats.maxStreak=stats.currentStreak;
+    removeWrong(q);
+  }else{
+    document.getElementById('opt-'+idx).classList.add('wrong');
+    document.getElementById('opt-'+q.ans).classList.add('correct');
+    stats.currentStreak=0;
+    addWrong(q,idx);
+  }
+  stats.total++;
+  document.getElementById('q-explain').classList.add('show');
+  document.getElementById('next-btn').classList.add('show');
+  save();updateUI();
+}
+function addWrong(q,idx){if(!stats.wrong.find(w=>w.q===q.q))stats.wrong.push({...q,yourAns:idx});}
+function removeWrong(q){stats.wrong=stats.wrong.filter(w=>w.q!==q.q);}
+function nextQuestion(isDaily){currentQ++;renderQuestion(isDaily);}
+function showResult(isDaily){
+  clearInterval(timerInterval);
+  const pct=Math.round(score/quizQuestions.length*100);
+  const names={math:'数论',classical:'古典',rsa:'RSA',symmetric:'对称',hash:'哈希',ecc:'ECC',lattice:'格/杂项',mixed:'混合'};
+  stats.history.unshift({cat:names[currentCat]||'混合',score:`${score}/${quizQuestions.length}`,date:new Date().toLocaleDateString('zh-CN')});
+  if(stats.history.length>50)stats.history.pop();
+  if(isDaily)stats.dailyDone=new Date().toDateString();
+  save();updateUI();
+  const msg=pct>=90?'太强了！':pct>=70?'不错！':pct>=50?'继续加油':'多看看学习卡片';
+  const timeStr=timerOn?`<div class="result-time">总用时 ${totalTime} 秒</div>`:'';
+  document.getElementById('quiz-area').innerHTML=`<div class="result-card"><div class="result-score">${pct}%</div><div class="result-label">${msg}</div>${timeStr}<div class="result-detail"><div class="item"><div class="num" style="color:var(--success)">${score}</div><div class="lbl">对</div></div><div class="item"><div class="num" style="color:var(--danger)">${quizQuestions.length-score}</div><div class="lbl">错</div></div><div class="item"><div class="num" style="color:var(--warn)">${quizQuestions.length}</div><div class="lbl">总</div></div></div><button class="start-btn" style="margin-top:24px" onclick="backToSelect()">返回</button></div>`;
+}
+function backToSelect(){document.getElementById('quiz-select').style.display='block';document.getElementById('quiz-area').style.display='none';checkDaily();}
+function renderCard(){const c=flashcards[fcIndex];document.getElementById('fc-front').textContent=c.q;document.getElementById('fc-back').innerHTML=c.a.replace(/\n/g,'<br>');document.getElementById('fc-count').textContent=`${fcIndex+1}/${flashcards.length}`;document.getElementById('flashcard').classList.remove('flipped');}
+function nextCard(){fcIndex=(fcIndex+1)%flashcards.length;renderCard();}
+function prevCard(){fcIndex=(fcIndex-1+flashcards.length)%flashcards.length;renderCard();}
+function showStatTab(tab,el){document.querySelectorAll('.tab-pill').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('stat-history').style.display=tab==='history'?'block':'none';document.getElementById('stat-wrong').style.display=tab==='wrong'?'block':'none';}
+function updateUI(){
+  const rate=stats.total?Math.round(stats.correct/stats.total*100):0;
+  document.getElementById('stat-total').textContent=stats.total;
+  document.getElementById('stat-correct').textContent=stats.correct;
+  document.getElementById('stat-rate').textContent=rate+'%';
+  document.getElementById('stat-streak').textContent=stats.maxStreak;
+  document.getElementById('globalProgress').style.width=rate+'%';
+  document.getElementById('totalAnswered').textContent=stats.total;
+  document.getElementById('headerRate').textContent=rate+'%';
+  document.getElementById('wrongCount').textContent=stats.wrong.length;
+  const badge=document.getElementById('wrongBadge');
+  if(stats.wrong.length){badge.style.display='flex';badge.textContent=stats.wrong.length;}else badge.style.display='none';
+  document.getElementById('stat-history').innerHTML=stats.history.length?stats.history.map(h=>`<div class="history-item"><span class="h-cat">${h.cat}</span><span class="h-score">${h.score}</span><span class="h-date">${h.date}</span></div>`).join(''):'<p class="empty-state">暂无记录</p>';
+  document.getElementById('stat-wrong').innerHTML=stats.wrong.length?stats.wrong.map(w=>`<div class="wrong-item"><div class="w-q">${w.q}</div><div class="w-a">✓ ${w.opts[w.ans]}</div>${w.yourAns>=0?`<div class="w-yours">✗ 你选了: ${w.opts[w.yourAns]}</div>`:'<div class="w-yours">✗ 超时未答</div>'}</div>`).join(''):'<p class="empty-state">暂无错题，太棒了！</p>';
+}
+function checkDaily(){
+  const today=new Date().toDateString();
+  const sub=document.getElementById('dailySub');
+  const btn=document.querySelector('.daily-banner .d-btn');
+  if(stats.dailyDone===today){sub.textContent='今日已完成 ✓ 明天再来';btn.textContent='已完成';btn.style.opacity='.5';}
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+load();renderCard();checkDaily();
+</script>
+</body>
+</html>
