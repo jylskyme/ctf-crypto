@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>CTF Crypto 刷题</title>
+<title>CTF 全能刷题</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--primary:#6c5ce7;--primary-light:#a29bfe;--success:#00b894;--danger:#e17055;--warn:#fdcb6e;--bg:#0a0e1a;--card:#141b2d;--card2:#1a2340;--text:#e8e8e8;--text2:#8892b0;--border:#233554;--radius:14px}
@@ -74,6 +74,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .next-btn{width:100%;padding:13px;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;cursor:pointer;margin-top:12px;display:none;transition:background .2s}
 .next-btn.show{display:block}
 .next-btn:active{background:var(--border)}
+.ai-explain-btn{width:100%;padding:11px;background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.3);border-radius:10px;color:var(--primary-light);font-size:13px;cursor:pointer;margin-top:8px;display:none;transition:all .2s}
+.ai-explain-btn.show{display:block}
+.ai-explain-btn:active{background:rgba(108,92,231,.25)}
+.ai-explain-box{margin-top:10px;padding:14px;background:rgba(0,206,201,.06);border-radius:10px;border-left:3px solid #00cec9;font-size:13px;line-height:1.7;color:var(--text2);display:none;animation:fadeIn .3s ease;white-space:pre-wrap}
+.ai-explain-box.show{display:block}
 .result-card{text-align:center;padding:40px 20px;animation:slideUp .4s ease}
 .result-score{font-size:52px;font-weight:700;background:linear-gradient(135deg,var(--primary),#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .result-label{color:var(--text2);margin-top:8px;font-size:14px}
@@ -89,7 +94,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .learn-card p{font-size:13px;color:var(--text2);line-height:1.7}
 .learn-card code{background:var(--card2);padding:1px 5px;border-radius:3px;font-size:12px;color:#74b9ff}
 .formula-box{background:var(--card2);border-radius:8px;padding:12px;margin:10px 0;font-family:'Courier New',monospace;font-size:12px;color:#dfe6e9;overflow-x:auto;white-space:pre-wrap;line-height:1.6}
-.tip-inline{background:rgba(253,203,110,.08);border-left:3px solid var(--warn);padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:12px;color:var(--warn)}
 .flashcard{perspective:1000px;height:220px;margin:16px 0;cursor:pointer}
 .flashcard-inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
 .flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
@@ -125,12 +129,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .tab-row{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
 .tab-pill{padding:7px 14px;border-radius:20px;font-size:12px;background:var(--card);border:1px solid var(--border);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s}
 .tab-pill.active{background:rgba(108,92,231,.15);border-color:var(--primary);color:var(--primary-light)}
+/* AI Chat Styles */
+.ai-chat-container{display:flex;flex-direction:column;height:calc(100vh - 160px);max-height:calc(100dvh - 160px)}
+.ai-messages{flex:1;overflow-y:auto;padding:10px 0;display:flex;flex-direction:column;gap:12px}
+.ai-msg{max-width:85%;padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.6;animation:fadeIn .3s ease;white-space:pre-wrap;word-break:break-word}
+.ai-msg.user{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.bot{align-self:flex-start;background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.ai-msg.bot code{background:var(--card2);padding:1px 5px;border-radius:3px;font-size:12px;color:#74b9ff}
+.ai-msg.typing{opacity:.7}
+.ai-input-area{display:flex;gap:8px;padding:12px 0;align-items:flex-end}
+.ai-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-size:14px;resize:none;max-height:100px;min-height:44px;line-height:1.4;font-family:inherit}
+.ai-input:focus{outline:none;border-color:var(--primary)}
+.ai-send{width:44px;height:44px;border-radius:12px;background:var(--primary);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-send:active{opacity:.8}
+.ai-send:disabled{opacity:.4;cursor:not-allowed}
+.ai-quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.ai-quick-btn{padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s}
+.ai-quick-btn:active{border-color:var(--primary);color:var(--primary-light)}
+.ai-status{font-size:11px;color:var(--text2);text-align:center;padding:6px 0}
 </style>
 </head>
 <body>
 <div class="header">
 <div class="header-top">
-<h1>CTF Crypto 刷题</h1>
+<h1>CTF 全能刷题</h1>
 <div class="header-right"><span>已答 <b id="totalAnswered">0</b></span><span>正确率 <b id="headerRate">0%</b></span></div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="globalProgress" style="width:0%"></div></div>
@@ -145,7 +167,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 <p class="section-title">选择方向</p>
 <div class="quiz-category">
-<div class="cat-btn selected" data-cat="math" onclick="selectCat(this)"><div class="cat-icon">🔢</div><div class="cat-name">数论基础</div><div class="cat-count">28 题</div></div>
+<div class="cat-btn selected" data-cat="web" onclick="selectCat(this)"><div class="cat-icon">🌐</div><div class="cat-name">Web安全</div><div class="cat-count">30 题</div></div>
+<div class="cat-btn" data-cat="pwn" onclick="selectCat(this)"><div class="cat-icon">💥</div><div class="cat-name">Pwn</div><div class="cat-count">30 题</div></div>
+<div class="cat-btn" data-cat="reverse" onclick="selectCat(this)"><div class="cat-icon">🔍</div><div class="cat-name">逆向</div><div class="cat-count">30 题</div></div>
+<div class="cat-btn" data-cat="misc" onclick="selectCat(this)"><div class="cat-icon">🧩</div><div class="cat-name">Misc</div><div class="cat-count">30 题</div></div>
+<div class="cat-btn" data-cat="math" onclick="selectCat(this)"><div class="cat-icon">🔢</div><div class="cat-name">数论基础</div><div class="cat-count">28 题</div></div>
 <div class="cat-btn" data-cat="classical" onclick="selectCat(this)"><div class="cat-icon">🏛️</div><div class="cat-name">古典密码</div><div class="cat-count">26 题</div></div>
 <div class="cat-btn" data-cat="rsa" onclick="selectCat(this)"><div class="cat-icon">🔐</div><div class="cat-name">RSA</div><div class="cat-count">32 题</div></div>
 <div class="cat-btn" data-cat="symmetric" onclick="selectCat(this)"><div class="cat-icon">🔒</div><div class="cat-name">对称加密</div><div class="cat-count">26 题</div></div>
@@ -177,34 +203,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 <div class="fc-nav">
 <button onclick="prevCard()">← 上一张</button>
-<span class="fc-count" id="fc-count">1/30</span>
+<span class="fc-count" id="fc-count">1/50</span>
 <button onclick="nextCard()">下一张 →</button>
 </div>
 <div class="learn-section" style="margin-top:30px">
+<h3>Web 攻击速查</h3>
+<div class="learn-card"><h4>漏洞类型 → 利用</h4><p>
+<code>SQL注入</code> → union/盲注/报错/堆叠<br>
+<code>XSS</code> → 反射/存储/DOM<br>
+<code>文件上传</code> → 绕过后缀/MIME/内容检测<br>
+<code>SSRF</code> → 内网探测/gopher/伪协议<br>
+<code>命令注入</code> → 管道符/反引号/$()绕过<br>
+<code>反序列化</code> → POP链/魔术方法<br>
+<code>SSTI</code> → 模板引擎沙箱逃逸</p></div>
+</div>
+<div class="learn-section">
+<h3>Pwn 攻击决策树</h3>
+<div class="learn-card"><h4>漏洞 → 利用方法</h4><p>
+<code>栈溢出</code> → ret2text/ret2shellcode/ROP<br>
+<code>格式化字符串</code> → 泄露/任意写<br>
+<code>堆溢出</code> → unlink/fastbin/tcache<br>
+<code>UAF</code> → double free/tcache poisoning<br>
+<code>整数溢出</code> → 绕过长度检查<br>
+<code>off-by-one</code> → 修改chunk size/fd<br>
+<code>保护机制</code> → canary/PIE/NX/RELRO</p></div>
+</div>
+<div class="learn-section">
+<h3>逆向分析流程</h3>
+<div class="learn-card"><h4>步骤</h4><p>
+<code>1.查壳</code> → PEiD/DIE/ExeinfoPE<br>
+<code>2.静态</code> → IDA/Ghidra反编译<br>
+<code>3.动态</code> → x64dbg/gdb跟踪<br>
+<code>4.算法</code> → 识别加密逻辑<br>
+<code>5.脱壳</code> → ESP定律/手动跟踪<br>
+<code>6.Patch</code> → 修改跳转/NOP</p></div>
+</div>
+<div class="learn-section">
 <h3>RSA 攻击决策树</h3>
 <div class="learn-card"><h4>已知参数 → 攻击方法</h4><p>
 <code>n小(&lt;100位)</code> → factordb/yafu分解<br>
 <code>e=3,无padding,短明文</code> → 直接开立方根<br>
 <code>同n不同e,gcd=1</code> → 共模攻击<br>
 <code>e=3,≥3个不同n</code> → 广播攻击(CRT)<br>
-<code>e很大(≈n位数)</code> → Wiener's Attack<br>
+<code>e很高(≈n位数)</code> → Wiener's Attack<br>
 <code>已知明文高位</code> → Coppersmith<br>
 <code>dp泄露</code> → 枚举gcd得p<br>
-<code>|p-q|很小</code> → Fermat分解<br>
-<code>p-1光滑</code> → Pollard p-1<br>
-<code>φ(n)已知</code> → 解二次方程<br>
-<code>d泄露</code> → 概率分解n<br>
-<code>n=p*q*r</code> → φ=(p-1)(q-1)(r-1)</p></div>
-</div>
-<div class="learn-section">
-<h3>对称加密攻击速查</h3>
-<div class="learn-card"><h4>模式 → 攻击</h4><p>
-<code>ECB</code> → 相同块泄露 / Byte-at-a-Time<br>
-<code>CBC+Oracle</code> → Padding Oracle逐字节<br>
-<code>CBC+可控密文</code> → Bit-Flipping<br>
-<code>CTR+nonce重用</code> → c1⊕c2=m1⊕m2<br>
-<code>GCM+nonce重用</code> → 恢复H伪造tag<br>
-<code>OFB/CFB</code> → keystream复用</p></div>
+<code>|p-q|很小</code> → Fermat分解</p></div>
 </div>
 <div class="learn-section">
 <h3>核心公式</h3>
@@ -214,16 +258,29 @@ Fermat: a^(p-1)≡1 (mod p)
 Euler: a^φ(n)≡1 (mod n)
 CRT: x≡ai (mod ni), ni互素
 φ(pq)=(p-1)(q-1)
-RSA: c=m^e mod n, m=c^d mod n
-ed≡1 (mod φ(n))
-共模: s1e1+s2e2=1 → m=c1^s1·c2^s2</div></div>
-<div class="learn-card"><h4>ECC & 格</h4><div class="formula-box">y²=x³+ax+b (mod p)
-点加: λ=(y2-y1)/(x2-x1)
-倍点: λ=(3x1²+a)/(2y1)
-ECDSA: r=(kG).x, s=k⁻¹(z+rd)
-k重用: k=(z1-z2)/(s1-s2)
-LLL: M.LLL() → 近似最短向量
-Coppersmith: f.small_roots(X=...)</div></div>
+RSA: c=m^e mod n, m=c^d mod n</div></div>
+</div>
+</div>
+
+<div class="page" id="page-ai">
+<p class="section-title">AI 学习助手</p>
+<div class="ai-quick">
+<div class="ai-quick-btn" onclick="aiQuick('解释一下SQL注入的原理和常见绕过方法')">SQL注入</div>
+<div class="ai-quick-btn" onclick="aiQuick('什么是ROP链？如何构造？')">ROP链</div>
+<div class="ai-quick-btn" onclick="aiQuick('如何用IDA逆向分析一个ELF文件？')">IDA逆向</div>
+<div class="ai-quick-btn" onclick="aiQuick('CTF中常见的隐写术有哪些？')">隐写术</div>
+<div class="ai-quick-btn" onclick="aiQuick('RSA共模攻击怎么实现？')">RSA共模</div>
+<div class="ai-quick-btn" onclick="aiQuick('堆利用中tcache poisoning是什么？')">tcache</div>
+</div>
+<div class="ai-chat-container">
+<div class="ai-messages" id="aiMessages">
+<div class="ai-msg bot">你好！我是你的CTF学习AI助手。你可以问我任何CTF相关问题，包括Web、Pwn、Reverse、Misc、Crypto等方向。我会尽力帮你理解概念、分析题目思路、讲解利用方法。</div>
+</div>
+<div class="ai-status" id="aiStatus"></div>
+<div class="ai-input-area">
+<textarea class="ai-input" id="aiInput" placeholder="问我任何CTF问题..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMsg()}"></textarea>
+<button class="ai-send" id="aiSendBtn" onclick="sendAiMsg()">➤</button>
+</div>
 </div>
 </div>
 
@@ -246,12 +303,141 @@ Coppersmith: f.small_roots(X=...)</div></div>
 <div class="nav">
 <div class="nav-item active" onclick="switchPage('quiz',this)"><span class="icon">✏️</span><span class="label">刷题</span></div>
 <div class="nav-item" onclick="switchPage('learn',this)"><span class="icon">📖</span><span class="label">学习</span></div>
+<div class="nav-item" onclick="switchPage('ai',this)"><span class="icon">🤖</span><span class="label">AI助手</span></div>
 <div class="nav-item" onclick="switchPage('stats',this)"><span class="icon">📊</span><span class="label">统计</span><span class="badge" id="wrongBadge" style="display:none">0</span></div>
 </div>
 
 <script>
 const Q={
-math:[
+web:[
+{q:"SQL注入中，<code>' OR 1=1--</code>的作用？",opts:["关闭数据库","使WHERE条件永真，绕过认证","删除表","加密数据"],ans:1,diff:"easy",explain:"单引号闭合前面字符串，OR 1=1使条件永真，--注释后续SQL。"},
+{q:"Union注入的前提条件？",opts:["需要管理员权限","前后查询列数相同且数据类型兼容","需要root","必须用POST"],ans:1,diff:"medium",explain:"UNION SELECT要求列数一致，用ORDER BY探测列数。"},
+{q:"盲注中<code>AND LENGTH(database())>5</code>属于？",opts:["报错注入","布尔盲注","时间盲注","堆叠注入"],ans:1,diff:"easy",explain:"通过页面返回true/false判断条件，逐字符猜解。"},
+{q:"<code>SLEEP(5)</code>在SQL注入中用于？",opts:["加速查询","时间盲注判断条件真假","删除数据","绕过WAF"],ans:1,diff:"medium",explain:"条件为真时延迟响应，通过响应时间判断。"},
+{q:"XSS中，哪种最危险？",opts:["反射型","存储型","DOM型","Self-XSS"],ans:1,diff:"easy",explain:"存储型持久化在服务器，所有访问者都受影响。"},
+{q:"<code>&lt;script&gt;alert(1)&lt;/script&gt;</code>被过滤，不能绕过的是？",opts:["大小写混合","双写script","用img onerror","以上都能绕过"],ans:3,diff:"medium",explain:"大小写、双写、换标签都是常见绕过。"},
+{q:"CSRF攻击利用的是？",opts:["服务器漏洞","浏览器自动携带Cookie的机制","SQL注入","XSS"],ans:1,diff:"easy",explain:"用户已登录状态下，恶意页面利用浏览器自动发送带Cookie的请求。"},
+{q:"防御CSRF最有效的方法？",opts:["检查Referer","CSRF Token","验证码","以上结合"],ans:3,diff:"medium",explain:"Token最核心，Referer可伪造，验证码增加难度。"},
+{q:"文件上传绕过<code>.php</code>后缀检测，不能用？",opts:[".php5/.phtml","双写.phpphp","改Content-Type","改文件内容"],ans:3,diff:"medium",explain:"改内容不能绕过后缀检测，需要改后缀或MIME。"},
+{q:"SSRF漏洞可以做什么？",opts:["只能访问外网","探测内网、读取本地文件、攻击内网服务","只能GET","只能打Redis"],ans:1,diff:"medium",explain:"利用服务器发起请求，可访问内网、file://、gopher://等。"},
+{q:"<code>file:///etc/passwd</code>在SSRF中？",opts:["无效","读取服务器本地文件","删除文件","执行命令"],ans:1,diff:"easy",explain:"file伪协议读取本地文件，需服务器允许。"},
+{q:"命令注入中，<code>;ls</code>的作用是？",opts:["注释","执行完前面命令后执行ls","管道","后台运行"],ans:1,diff:"easy",explain:"分号分隔多条命令，依次执行。"},
+{q:"PHP反序列化漏洞的入口？",opts:["eval()","unserialize()接收用户输入","include()","echo"],ans:1,diff:"medium",explain:"unserialize()触发对象的__wakeup/__destruct等魔术方法。"},
+{q:"SSTI模板注入中，<code>{{7*7}}</code>返回49说明？",opts:["正常输出","存在模板注入漏洞","语法错误","需要登录"],ans:1,diff:"easy",explain:"模板引擎执行了表达式，说明用户输入被当作模板解析。"},
+{q:"JWT攻击中，<code>alg:none</code>利用的是？",opts:["加密算法弱","服务器接受空算法不验证签名","密钥泄露","过期时间"],ans:1,diff:"medium",explain:"将header中alg改为none，去掉签名，某些库会接受。"},
+{q:"目录遍历<code>../../etc/passwd</code>利用的是？",opts:["SQL注入","路径未过滤导致越权读取","XSS","CSRF"],ans:1,diff:"easy",explain:"../向上跳目录，未过滤则可读取任意文件。"},
+{q:"PHP中<code>md5('240610708')==md5('QNKCDZO')</code>为true因为？",opts:["碰撞","都是0e开头被当科学计数法=0","bug","编码问题"],ans:1,diff:"medium",explain:"PHP弱类型比较，0e...被解释为0×10^...=0。"},
+{q:"HTTP请求走私利用？",opts:["XSS","前后端对Content-Length/Transfer-Encoding解析不一致","SQL注入","CSRF"],ans:1,diff:"hard",explain:"CL-TE或TE-CL不一致导致请求边界混淆。"},
+{q:"<code>ORDER BY 5</code>报错，<code>ORDER BY 4</code>正常，说明？",opts:["有5列","有4列","有3列","无法判断"],ans:1,diff:"easy",explain:"ORDER BY N正常说明至少有N列，N+1报错说明恰好N列。"},
+{q:"XXE漏洞利用的是？",opts:["JSON解析","XML外部实体引用","HTML渲染","CSS注入"],ans:1,diff:"medium",explain:"XML解析器允许外部实体，可读取文件/SSRF。"},
+{q:"<code>php://filter/read=convert.base64-encode/resource=index</code>用于？",opts:["执行命令","读取源码(Base64编码输出)","删除文件","上传"],ans:1,diff:"medium",explain:"PHP伪协议读取文件内容并Base64编码，避免被解析。"},
+{q:"CORS配置<code>Access-Control-Allow-Origin:*</code>的风险？",opts:["无风险","任何域可跨域读取响应","只能GET","加速"],ans:1,diff:"medium",explain:"配合credentials可泄露敏感数据。"},
+{q:"WAF绕过中，<code>/*!50000select*/</code>利用？",opts:["SQL注释","MySQL内联注释执行","编码","大小写"],ans:1,diff:"hard",explain:"MySQL特有的版本注释，WAF可能不解析。"},
+{q:"<code>eval($_POST['cmd'])</code>是什么？",opts:["正常代码","一句话木马","加密函数","数据库操作"],ans:1,diff:"easy",explain:"接收POST参数作为PHP代码执行，典型webshell。"},
+{q:"信息泄露中，<code>.git</code>目录暴露可以？",opts:["无影响","恢复网站源码","只能看日志","删除网站"],ans:1,diff:"medium",explain:"git目录含完整历史，可用工具恢复所有源码。"},
+{q:"<code>Content-Type: multipart/form-data</code>常用于？",opts:["JSON传输","文件上传","GET请求","WebSocket"],ans:1,diff:"easy",explain:"表单提交和文件上传使用此类型。"},
+{q:"SQL注入中<code>information_schema.tables</code>用于？",opts:["存储用户数据","查询所有表名","存储密码","日志"],ans:1,diff:"medium",explain:"MySQL系统库，存储所有数据库的元信息。"},
+{q:"<code>document.cookie</code>在XSS中？",opts:["设置Cookie","窃取当前页面Cookie","删除Cookie","加密"],ans:1,diff:"easy",explain:"攻击者用XSS读取cookie发送到自己的服务器。"},
+{q:"PHP中<code>include($_GET['page'])</code>存在？",opts:["SQL注入","文件包含漏洞(LFI/RFI)","XSS","CSRF"],ans:1,diff:"easy",explain:"用户控制包含路径，可包含本地/远程恶意文件。"},
+{q:"<code>HTTP/2</code>相比HTTP/1.1的新攻击面？",opts:["无","请求走私变体、头部注入","只有XSS","只有CSRF"],ans:1,diff:"hard",explain:"H2多路复用和头部压缩带来新走私向量。"}
+],
+pwn:[
+{q:"栈溢出最基本的利用方式？",opts:["修改全局变量","覆盖返回地址跳转到目标函数","修改堆","修改.bss"],ans:1,diff:"easy",explain:"溢出覆盖saved RIP/RET，控制程序执行流。"},
+{q:"NX保护开启后不能？",opts:["读栈","在栈上执行shellcode","调用函数","返回"],ans:1,diff:"easy",explain:"NX使栈不可执行，需用ROP/ret2libc。"},
+{q:"ROP的核心思想？",opts:["注入代码","串联程序中已有的gadget","修改GOT","堆喷射"],ans:1,diff:"medium",explain:"利用ret结尾的代码片段(pop rdi;ret等)组装调用链。"},
+{q:"<code>pop rdi; ret</code>这个gadget的作用？",opts:["输出","将栈顶值弹入rdi(第一参数)","跳转","返回"],ans:1,diff:"easy",explain:"x64调用约定第一参数用rdi传递。"},
+{q:"ret2libc攻击绕过什么？",opts:["NX(不可执行栈)","Canary","PIE","RELRO"],ans:0,diff:"medium",explain:"调用libc中system()等已有函数，不需要执行栈上代码。"},
+{q:"Canary保护检测什么？",opts:["栈溢出","在返回地址前放随机值，检测是否被覆盖","堆溢出","格式化"],ans:1,diff:"easy",explain:"函数返回前检查canary值，被改则__stack_chk_fail。"},
+{q:"格式化字符串漏洞<code>printf(buf)</code>能做什么？",opts:["只能输出","泄露栈上数据、任意地址写","只能读","崩溃"],ans:1,diff:"medium",explain:"%p泄露，%n写入，可改GOT/返回地址。"},
+{q:"<code>%n</code>在格式化字符串中？",opts:["输出换行","将已输出字符数写入对应地址","读取","无意义"],ans:1,diff:"medium",explain:"配合偏移可任意地址写，改GOT表劫持函数。"},
+{q:"PIE保护开启后？",opts:["GOT不可写","程序基址随机化，不能硬编码地址","栈不可执行","canary失效"],ans:1,diff:"medium",explain:"需先泄露基址再计算偏移。"},
+{q:"Full RELRO保护？",opts:["栈保护","GOT表只读，不能改GOT","PIE","NX"],ans:1,diff:"medium",explain:"程序启动时解析所有符号，GOT不可写。"},
+{q:"<code>checksec</code>工具查看？",opts:["源码","二进制保护机制(NX/PIE/Canary/RELRO)","网络","堆"],ans:1,diff:"easy",explain:"pwn题第一步，确定有哪些保护。"},
+{q:"<code>pwntools</code>中<code>remote()</code>用于？",opts:["本地调试","连接远程服务器","反编译","生成payload"],ans:1,diff:"easy",explain:"p=remote('host',port)建立TCP连接。"},
+{q:"堆溢出利用中，<code>unlink</code>攻击？",opts:["释放时合并chunk，伪造fd/bk实现任意写","分配","输出","加密"],ans:0,diff:"hard",explain:"伪造chunk的fd/bk指针，unlink时写目标地址。"},
+{q:"tcache poisoning利用？",opts:["栈溢出","修改freed chunk的fd指针，分配到任意地址","格式化","UAF"],ans:1,diff:"hard",explain:"tcache无完整性检查(2.27前)，改fd即可。"},
+{q:"UAF(Use After Free)是？",opts:["栈溢出","释放后继续使用指针","格式化","整数溢出"],ans:1,diff:"easy",explain:"free后指针未置空，再访问可被利用。"},
+{q:"<code>malloc</code>返回的地址对齐？",opts:["4字节","16字节(x64)","8字节","无对齐"],ans:1,diff:"medium",explain:"glibc保证16字节对齐。"},
+{q:"fastbin attack利用？",opts:["大chunk","fastbin单链表LIFO，改fd分配到目标","tcache","unsorted"],ans:1,diff:"hard",explain:"fastbin不合并，改fd可分配到任意地址。"},
+{q:"<code>one_gadget</code>是什么？",opts:["ROP链","libc中直接execve('/bin/sh')的地址","shellcode","gadget"],ans:1,diff:"medium",explain:"找到满足约束条件即可直接getshell。"},
+{q:"泄露libc基址的方法？",opts:["直接读","puts/got中已解析的libc函数地址","栈","堆"],ans:1,diff:"medium",explain:"输出GOT表中puts@GOT，减去偏移得基址。"},
+{q:"<code>ret2csu</code>用于？",opts:["x86","x64中找通用gadget控制多个寄存器","ARM","MIPS"],ans:1,diff:"hard",explain:"__libc_csu_init中有pop rbx/rbp/r12-r15的gadget。"},
+{q:"整数溢出漏洞典型场景？",opts:["栈溢出","长度检查时负数/溢出绕过malloc大小","格式化","UAF"],ans:1,diff:"medium",explain:"如int转size_t，负数变巨大值或0。"},
+{q:"<code>off-by-one</code>堆利用？",opts:["栈","修改相邻chunk的size或fd","格式化","ROP"],ans:1,diff:"hard",explain:"一字节的溢出可改chunk元数据。"},
+{q:"<code>house of force</code>利用？",opts:["fastbin","修改top chunk size为极大值","tcache","unsorted"],ans:1,diff:"hard",explain:"top chunk任意大，malloc到目标地址附近。"},
+{q:"<code>system('/bin/sh')</code>在x64中参数？",opts:["eax","rdi","rsi","栈"],ans:1,diff:"easy",explain:"x64 System V ABI第一参数rdi。"},
+{q:"<code>gdb</code>中<code>b *0x401234</code>？",opts:["运行","在地址处设断点","删除","继续"],ans:1,diff:"easy",explain:"b *addr设置断点。"},
+{q:"<code>pwntools</code>中<code>flat()</code>？",opts:["加密","将列表打包为字节流(拼接payload)","解包","连接"],ans:1,diff:"easy",explain:"flat([padding,addr,arg])生成payload。"},
+{q:"<code>__malloc_hook</code>利用？",opts:["栈","改写为one_gadget/system，malloc时触发","堆溢出","格式化"],ans:1,diff:"hard",explain:"libc中函数指针，malloc前调用。"},
+{q:"<code>seccomp</code>沙箱限制？",opts:["网络","系统调用白名单","内存","CPU"],ans:1,diff:"medium",explain:"只允许特定syscall，需orw(open/read/write)。"},
+{q:"<code>ret2dlresolve</code>绕过？",opts:["NX","无符号表/Full RELRO，伪造重定位","PIE","Canary"],ans:1,diff:"hard",explain:"伪造Elf64_Rela和符号表触发动态链接。"},
+{q:"<code>cyclic</code>和<code>cyclic_find</code>？",opts:["加密","生成/定位溢出偏移的de Bruijn序列","解密","连接"],ans:1,diff:"easy",explain:"cyclic(200)生成唯一模式，崩溃后找偏移。"}
+],
+reverse:[
+{q:"IDA中按什么键反编译为伪C代码？",opts:["F1","F5","F7","F9"],ans:1,diff:"easy",explain:"F5调用Hex-Rays反编译器生成伪代码。"},
+{q:"<code>NOP</code>指令的机器码？",opts:["0x00","0x90","0xFF","0xCC"],ans:1,diff:"easy",explain:"x86/x64中NOP=0x90，常用于patch。"},
+{q:"<code>int 3</code>断点的机器码？",opts:["0x90","0xCC","0xCD","0xFF"],ans:1,diff:"easy",explain:"0xCC是软件断点指令，调试器用。"},
+{q:"ELF文件中，<code>.text</code>段存放？",opts:["全局变量","可执行代码","字符串","符号表"],ans:1,diff:"easy",explain:".text存放程序指令，.data存已初始化全局变量。"},
+{q:"<code>strcmp</code>在逆向中常见于？",opts:["加密","比较字符串(常用于flag验证)","输出","分配"],ans:1,diff:"easy",explain:"程序常用strcmp比较输入与正确flag。"},
+{q:"UPX壳的特征？",opts:["无字符串","UPX!标识，入口点代码压缩","加花","虚拟机"],ans:1,diff:"easy",explain:"UPX压缩的PE/ELF含UPX0/UPX1段和UPX!标记。"},
+{q:"脱UPX壳最简单方法？",opts:["手动跟踪","upx -d file","IDA","gdb"],ans:1,diff:"easy",explain:"upx -d直接脱壳，最简单。"},
+{q:"<code>xor eax,eax</code>的效果？",opts:["eax=1","eax=0(清零)","eax不变","eax=-1"],ans:1,diff:"easy",explain:"任何数异或自身=0，常用于清零寄存器。"},
+{q:"<code>call</code>指令做了什么？",opts:["跳转不返回","push返回地址+jmp目标","只push","只jmp"],ans:1,diff:"easy",explain:"call = push rip + jmp，ret时pop rip返回。"},
+{q:"<code>leave; ret</code>等价于？",opts:["nop","mov rsp,rbp; pop rbp; ret","jmp","call"],ans:1,diff:"medium",explain:"leave恢复栈帧，ret返回，函数结尾常见。"},
+{q:"IDA中<code>x</code>键功能？",opts:["删除","查看交叉引用(xref)","重命名","注释"],ans:1,diff:"easy",explain:"查看谁调用了这个函数/谁引用了这个数据。"},
+{q:"<code>__stdcall</code>调用约定？",opts:["调用者清栈","被调用者清栈，参数从右入栈","寄存器","随机"],ans:1,diff:"medium",explain:"Windows API常用，callee清理栈。"},
+{q:"<code>patch</code>二进制中<code>jnz</code>为<code>jz</code>？",opts:["改机器码0x75→0x74","改源码","改字符串","改栈"],ans:0,diff:"medium",explain:"jnz=0x75,jz=0x74，修改跳转逻辑。"},
+{q:"<code>base64</code>编码在逆向中识别？",opts:["查表","字符集A-Za-z0-9+/，长度4的倍数","异或","移位"],ans:1,diff:"easy",explain:"看到标准字符集和padding(=)即base64。"},
+{q:"<code>TEA</code>加密算法特征？",opts:["大常数","magic number 0x9e3779b9(黄金分割)","S盒","矩阵"],ans:1,diff:"medium",explain:"TEA/XTEA用delta=0x9e3779b9，逆向中常见。"},
+{q:"<code>angr</code>框架用于？",opts:["加密","符号执行自动求解路径/flag","脱壳","抓包"],ans:1,diff:"medium",explain:"符号执行探索路径，自动找满足条件的输入。"},
+{q:"<code>z3</code>求解器在逆向中？",opts:["反编译","约束求解(已知算法反推输入)","脱壳","调试"],ans:1,diff:"medium",explain:"将验证逻辑转为约束，z3.solve()求输入。"},
+{q:"<code>jmp rax</code>属于？",opts:["直接跳转","间接跳转(地址在寄存器)","调用","返回"],ans:1,diff:"easy",explain:"跳转到rax寄存器中存储的地址。"},
+{q:"<code>PE</code>文件的入口点在哪？",opts:[".text开头","PE Header的AddressOfEntryPoint",".data",".rsrc"],ans:1,diff:"medium",explain:"OEP在Optional Header中指定。"},
+{q:"<code>花指令</code>的作用？",opts:["加速","干扰反汇编/反编译","加密","压缩"],ans:1,diff:"easy",explain:"插入无用/混淆指令增加分析难度。"},
+{q:"<code>RC4</code>在逆向中识别？",opts:["S盒256字节","256字节状态数组+KSA/PRGA","大素数","矩阵"],ans:1,diff:"medium",explain:"看到256字节permutation初始化即RC4。"},
+{q:"<code>gdb</code>中<code>ni</code>和<code>si</code>区别？",opts:["相同","ni不进入call，si进入call","ni进入，si不","随机"],ans:1,diff:"easy",explain:"next instruction vs step instruction。"},
+{q:"<code>VMProtect</code>壳的特点？",opts:["简单压缩","将指令转为自定义字节码虚拟机执行","UPX","无保护"],ans:1,diff:"hard",explain:"代码虚拟化，极难静态分析。"},
+{q:"<code>movzx</code>指令？",opts:["有符号扩展","零扩展(高位补0)","压缩","跳转"],ans:1,diff:"medium",explain:"move with zero-extend，常用于字节→字。"},
+{q:"<code>__attribute__((constructor))</code>？",opts:["析构","main之前自动执行的函数","中断","系统调用"],ans:1,diff:"medium",explain:"ELF中.init_array，程序启动时先执行。"},
+{q:"<code>strip</code>后的二进制？",opts:["更大","去除了符号表(函数名)","加密","压缩"],ans:1,diff:"easy",explain:"strip去掉调试信息和符号，增加逆向难度。"},
+{q:"<code>test eax,eax; je</code>判断？",opts:["eax=1","eax是否为0","eax>0","eax<0"],ans:1,diff:"easy",explain:"test做与运算设标志位，je检查ZF。"},
+{q:"<code>smali</code>是什么？",opts:["x86汇编","Android Dalvik字节码的可读形式","ARM","MIPS"],ans:1,diff:"medium",explain:"反编译APK后修改smali再打包。"},
+{q:"<code>hook</code>技术在逆向中？",opts:["加密","拦截函数调用(如frida/xposed)","脱壳","编译"],ans:1,diff:"medium",explain:"运行时替换函数入口，监控/修改行为。"},
+{q:"<code>0x55</code>在函数开头通常是？",opts:["nop","push rbp(保存栈帧基址)","ret","call"],ans:1,diff:"easy",explain:"push rbp=0x55，函数序言第一步。"}
+],
+misc:[
+{q:"<code>file</code>命令在Misc中用于？",opts:["删除","识别文件类型(魔数)","加密","压缩"],ans:1,diff:"easy",explain:"通过文件头魔数判断真实类型，不看扩展名。"},
+{q:"PNG文件头魔数？",opts:["FF D8","89 50 4E 47","47 49 46","50 4B"],ans:1,diff:"medium",explain:"89 50 4E 47 0D 0A 1A 0A是PNG标识。"},
+{q:"<code>binwalk</code>用于？",opts:["加密","分析/提取文件中嵌入的文件","压缩","抓包"],ans:1,diff:"easy",explain:"识别并提取嵌入的文件(如图片中的zip)。"},
+{q:"<code>steghide</code>处理哪种文件？",opts:["PNG","JPEG/BMP/WAV","GIF","MP4"],ans:1,diff:"medium",explain:"JPEG/BMP/WAV隐写，需密码提取。"},
+{q:"<code>zsteg</code>用于？",opts:["JPEG","PNG/BMP隐写检测","GIF","WAV"],ans:1,diff:"medium",explain:"检测PNG/BMP中LSB隐写和附加数据。"},
+{q:"<code>Wireshark</code>过滤HTTP请求用？",opts:["tcp","http.request","ip.addr","dns"],ans:1,diff:"easy",explain:"http.request过滤所有HTTP请求包。"},
+{q:"<code>foremost</code>工具？",opts:["加密","基于文件头/尾 carving恢复文件","压缩","编码"],ans:1,diff:"medium",explain:"按魔数从原始数据中恢复文件。"},
+{q:"<code>Base64</code>中<code>==</code>表示？",opts:["错误","填充(padding)，原文长度非3倍数","加密","结束"],ans:1,diff:"easy",explain:"3字节→4字符，不足时=填充。"},
+{q:"<code>010 Editor</code>在Misc中？",opts:["文本编辑","十六进制编辑/分析文件结构","加密","抓包"],ans:1,diff:"easy",explain:"查看/编辑二进制，配合模板解析格式。"},
+{q:"<code>LSB</code>隐写是？",opts:["最高位","最低有效位嵌入数据","压缩","加密"],ans:1,diff:"easy",explain:"修改像素最低位，肉眼不可见。"},
+{q:"<code>QR码</code>损坏一角？",opts:["完全无法读","可能仍可识别(有纠错)","只能读一半","变颜色"],ans:1,diff:"easy",explain:"QR有Reed-Solomon纠错，最高30%容错。"},
+{q:"<code>strings</code>命令？",opts:["删除","提取二进制中的可打印字符串","加密","压缩"],ans:1,diff:"easy",explain:"快速查看二进制中的明文信息。"},
+{q:"<code>xxd</code>命令？",opts:["加密","十六进制查看/编辑文件","压缩","抓包"],ans:1,diff:"easy",explain:"xxd file查看hex，xxd -r反向。"},
+{q:"<code>zip</code>伪加密识别？",opts:["真加密","标志位0x09改为0x00即可打开","需密码","无法"],ans:1,diff:"medium",explain:"修改全局标志位和局部标志位的加密位。"},
+{q:"<code>CRC32</code>碰撞在Misc中？",opts:["加密","利用CRC校验反推/伪造数据","压缩","编码"],ans:1,diff:"hard",explain:"CRC32可逆，短数据可暴力碰撞。"},
+{q:"<code>Volatility</code>用于？",opts:["网络","内存取证(分析内存镜像)","磁盘","编码"],ans:1,diff:"medium",explain:"分析RAM dump，提取进程/网络/文件。"},
+{q:"<code>exiftool</code>？",opts:["加密","读取/编辑图片元数据(EXIF)","压缩","隐写"],ans:1,diff:"easy",explain:"查看GPS、相机、软件等元信息。"},
+{q:"<code>Morse</code>电码<code>.... . .-.. .-.. ---</code>？",opts:["WORLD","HELLO","CTF","FLAG"],ans:1,diff:"easy",explain:"H=...., E=., L=.-.., O=---。"},
+{q:"<code>Brainfuck</code>语言特征？",opts:["正常代码","只有+-<>.,[]八种字符","二进制","十六进制"],ans:1,diff:"easy",explain:"极简语言，CTF中作为编码出现。"},
+{q:"<code>流量分析</code>中TCP流追踪？",opts:["看单包","Follow TCP Stream重组完整通信","看DNS","看ARP"],ans:1,diff:"easy",explain:"右键Follow TCP Stream看完整会话。"},
+{q:"<code>NTFS</code>文件系统中$MFT？",opts:["日志","主文件表(记录所有文件元数据)","回收站","注册表"],ans:1,diff:"medium",explain:"磁盘取证中分析$MFT恢复删除文件。"},
+{q:"<code>频谱图</code>隐写(SSTV)？",opts:["文本","音频频谱中隐藏图像","视频","压缩包"],ans:1,diff:"medium",explain:"用SSTV/频谱分析工具查看音频中的图。"},
+{q:"<code>凯撒+栅栏</code>组合在Misc中？",opts:["高级加密","简单编码组合，逐步解","RSA","AES"],ans:1,diff:"easy",explain:"Misc中常见多层简单编码嵌套。"},
+{q:"<code>git</code>仓库泄露恢复？",opts:["无法","git_log/git_reset恢复历史提交","删除","加密"],ans:1,diff:"medium",explain:".git目录暴露可恢复所有历史版本。"},
+{q:"<code>PDF</code>隐写常见位置？",opts:["只有文本","JS/附件/元数据/图片层","不存在","只在标题"],ans:1,diff:"medium",explain:"PDF结构复杂，多处可藏数据。"},
+{q:"<code>dd</code>命令在取证中？",opts:["删除","磁盘镜像/数据提取","加密","压缩"],ans:1,diff:"easy",explain:"dd if=/dev/sda of=image.raw做镜像。"},
+{q:"<code>Unicode</code>零宽字符隐写？",opts:["可见","插入不可见Unicode字符编码信息","压缩","加密"],ans:1,diff:"medium",explain:"零宽空格/连接符肉眼不可见但可编码。"},
+{q:"<code>PK</code>文件头(50 4B)是？",opts:["PNG","ZIP/Office文档","GIF","PDF"],ans:1,diff:"easy",explain:"PK是ZIP魔数，docx/xlsx/pptx也是zip。"},
+{q:"<code>John</code>和<code>hashcat</code>？",opts:["加密","密码/哈希破解工具","压缩","抓包"],ans:1,diff:"easy",explain:"John the Ripper和hashcat暴力/字典破解。"},
+{q:"<code>OutGuess</code>用于？",opts:["PNG","JPEG隐写(保留统计特征)","GIF","BMP"],ans:1,diff:"hard",explain:"高级JPEG隐写工具，抗统计检测。"}
+]
+,math:[
 {q:"在模运算中，<code>(17×23) mod 5</code> = ？",opts:["1","2","3","4"],ans:0,diff:"easy",explain:"17 mod 5=2, 23 mod 5=3, 2×3=6, 6 mod 5=1。"},
 {q:"<code>gcd(35, 15)</code> = ？",opts:["1","5","10","15"],ans:1,diff:"easy",explain:"35=2×15+5, 15=3×5+0, gcd=5。"},
 {q:"p=11, q=13，<code>φ(n)</code> = ？",opts:["120","143","100","130"],ans:0,diff:"easy",explain:"φ(n)=(p-1)(q-1)=10×12=120。"},
@@ -396,7 +582,7 @@ hash:[
 {q:"抗碰撞vs抗原像哪个更难实现？",opts:["抗碰撞","抗原像","相同","看实现"],ans:1,diff:"hard",explain:"抗原像O(2^n)，抗碰撞O(2^(n/2))。"}
 ],
 ecc:[
-{q:"P+P叫？",opts:["点乘","点倍点","点逆","点交换"],ans:1,diff:"easy",explain:"doubling，标量乘法基本操作。"},
+{q:"P+P叫？",opts:["点乘法","点倍点","点逆","点交换"],ans:1,diff:"easy",explain:"doubling，标量乘法基本操作。"},
 {q:"ECC基于？",opts:["大数分解","ECDLP","格SVP","背包"],ans:1,diff:"easy",explain:"256位ECC≈3072位RSA。"},
 {q:"ECDSA k重用→？",opts:["无影响","恢复私钥","变慢","重新生成"],ans:1,diff:"medium",explain:"联立解k再求d。Sony PS3。"},
 {q:"4a³+27b²=0意味？",opts:["a=0","曲线奇异不安全","b=0","安全"],ans:1,diff:"medium",explain:"ECDLP可映射到加法/乘法群。"},
@@ -448,6 +634,16 @@ lattice:[
 };
 
 const flashcards=[
+{q:"SQL注入分类？",a:"按注入点: GET/POST/Cookie/Header\n按类型: Union/布尔盲注/时间盲注/报错/堆叠\n按数据: 数字型/字符型\n绕过: 大小写/双写/注释/编码/内联"},
+{q:"XSS三种类型？",a:"反射型: URL参数,需诱导点击\n存储型: 入库,所有访问者中招\nDOM型: 前端JS处理,不经服务器\n防御: 输出编码+CSP+HttpOnly"},
+{q:"文件上传绕过？",a:"后缀: .php5/.phtml/.phar\nMIME: 改Content-Type\n内容: 图片马+文件包含\n解析: .php.jpg(Apache)\n00截断: PHP<5.3.4"},
+{q:"SSRF利用？",a:"伪协议: file:// gopher:// dict://\n内网: 127.0.0.1 10.x 172.16-31 192.168\n绕过: @ [::] 短网址 DNS重绑定\n302跳转绕过白名单"},
+{q:"ROP链构造？",a:"1.checksec看保护\n2.找gadget: ROPgadget --binary x\n3.布局: padding+pop rdi;ret+addr+call\n4.ret2libc: 泄露puts→算基址→system\n5.约束: 栈对齐(mov rsp,x)"},
+{q:"格式化字符串？",a:"泄露: %p.%p.%p 或 %7$p\n任意写: %n写入已输出字节数\n改GOT: printf@GOT→system\n偏移: AAAA%7$n (地址在栈第7位)\nhh/n/ll控制写入大小"},
+{q:"堆利用概览？",a:"fastbin: 单链表,改fd分配任意\ntcache: 2.26+,无检查,poisoning\nunsorted: 双向,unlink\nUAF: free后重用,改vtable\noff-by-one: 改size/fd\nhouse系列: force/orange/spirit"},
+{q:"逆向分析流程？",a:"1.file/strings初步\n2.checksec(ELF)/PEiD(PE)\n3.IDA F5看伪代码\n4.找main/入口/验证函数\n5.分析算法(加密/编码)\n6.z3/angr求解\n7.动态gdb/x64dbg验证"},
+{q:"常见加密识别？",a:"MD5: 32hex\nSHA1: 40hex\nBase64: A-Za-z0-9+/=\nAES: 16字节倍数\nRC4: 256字节S盒\nTEA: 0x9e3779b9\nRSA: 大整数n,e,c"},
+{q:"Misc文件头？",a:"PNG: 89 50 4E 47\nJPEG: FF D8 FF\nGIF: 47 49 46\nZIP: 50 4B 03 04\nPDF: 25 50 44 46\nELF: 7F 45 4C 46\nPE: 4D 5A (MZ)"},
 {q:"RSA中φ(n)怎么算？",a:"n=p×q: φ=(p-1)(q-1)\n多素数: φ=∏(pi-1)\np^k: φ=p^k-p^(k-1)"},
 {q:"共模攻击？",a:"同m同n不同e, gcd(e1,e2)=1\ns1e1+s2e2=1\nm=c1^s1·c2^s2 mod n\ns负→先求逆元"},
 {q:"Wiener信号与方法？",a:"e位数≈n → d可能小\ne/n连分数展开\n逐收敛子试k/d\n验证解密"},
@@ -477,15 +673,34 @@ const flashcards=[
 {q:"Pollard p-1？",a:"p-1是B-光滑\na^(B!) mod n\ngcd(a^(B!)-1,n)=p\ngmpy2实现"},
 {q:"Shamir？",a:"秘密=f(0), t-1次多项式\n分发n个点\n任意t个→插值\n<t个→信息论安全"},
 {q:"PHP MD5陷阱？",a:"0e开头→科学计数法=0\n==比较时相等\n用===或sha256"},
-{q:"比赛解题流程？",a:"1.判断类型\n2.提取参数\n3.对照决策树\n4.套模板\n5.卡20min换题\n6.拿flag提交"}
+{q:"比赛解题流程？",a:"1.判断类型\n2.提取参数\n3.对照决策树\n4.套模板\n5.卡20min换题\n6.拿flag提交"},
+{q:"Web信息收集？",a:"dirsearch/ffuf目录扫描\nnmap端口扫描\nwhatweb指纹\ngit/svn泄露\nrobots.txt/sitemap\n子域名枚举"},
+{q:"反序列化POP链？",a:"找入口: __wakeup/__destruct\n找利用: eval/system/file_put\n找连接: 属性可控传递\nPHP: phar://触发\nJava: Commons-Collections"},
+{q:"Pwn调试技巧？",a:"gdb+peda/pwndbg\nb *addr断点\nx/20wx $rsp看栈\nvmmap看内存布局\ncyclic找偏移\none_gadget找shell"},
+{q:"隐写工具集？",a:"PNG: zsteg/stegsolve\nJPEG: steghide/outguess\nGIF: 逐帧分离\n音频: audacity频谱\nPDF: pdfdetach/strings\n磁盘: foremost/binwalk"},
+{q:"流量分析？",a:"Wireshark过滤器\ntcp.stream eq N\nhttp contains flag\n导出HTTP对象\nTLS: 有key则解密\nUSB: 键盘/鼠标数据"},
+{q:"编码识别？",a:"Base64: 4倍数,+/=\nBase32: A-Z2-7\nBase16: 0-9A-F\nURL: %XX\nHTML实体: &#x\nUnicode: \\uXXXX\nRot: 字母偏移"},
+{q:"Linux保护机制？",a:"NX: 栈不可执行\nCanary: 栈溢出检测\nPIE: 地址随机化\nRELRO: GOT只读\nASLR: 系统级随机化\nseccomp: syscall过滤"},
+{q:"x64调用约定？",a:"参数: rdi,rsi,rdx,rcx,r8,r9\n返回: rax\n栈: 16字节对齐\ncall: push rip+jmp\nleave: mov rsp,rbp;pop rbp"},
+{q:"IDA快捷键？",a:"F5: 反编译\nx: 交叉引用\nn: 重命名\n/: 注释\ng: 跳转地址\n空格: 图形/文本切换\nTab: 切换视图"},
+{q:"CTF工具速查？",a:"Web: burp/sqlmap/dirsearch\nPwn: pwntools/ROPgadget\nRev: IDA/Ghidra/angr/z3\nMisc: binwalk/foremost/Wireshark\nCrypto: SageMath/gmpy2/RsaCtfTool"}
 ];
 
-let currentCat='math',quizQuestions=[],currentQ=0,score=0,answered=false,quizMode=5,timerOn=false,timerInterval=null,timeLeft=30,totalTime=0;
+// AI Configuration
+const AI_CONFIG={
+  apiKey:'sk-ws-H.RYEIPXP.JM2d.MEUCIDpcOPUwz--JO_Nwn-ZcYSsCqJQv0MRjUr7rwmkOCwdBAiEAxZqLNAcP00dq7vJwA6TI7Dm-HG_2yGF7ii0rJFtY7V4',
+  baseUrl:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+  model:'qwen-plus'
+};
+let aiHistory=[{role:'system',content:'你是一个CTF竞赛学习助手，精通Web安全、Pwn(二进制漏洞利用)、Reverse(逆向工程)、Misc(杂项/取证)、Crypto(密码学)等方向。回答要简洁实用，适合CTF初学者理解，可以给出代码示例和工具推荐。用中文回答。'}];
+let aiLoading=false;
+
+let currentCat='web',quizQuestions=[],currentQ=0,score=0,answered=false,quizMode=5,timerOn=false,timerInterval=null,timeLeft=30,totalTime=0;
 let stats={total:0,correct:0,maxStreak:0,currentStreak:0,history:[],wrong:[],dailyDone:null};
 let fcIndex=0;
 
-function load(){try{const s=JSON.parse(localStorage.getItem('ctf-v3'));if(s)stats=s;}catch(e){}updateUI();}
-function save(){try{localStorage.setItem('ctf-v3',JSON.stringify(stats));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem('ctf-all-v1'));if(s)stats=s;}catch(e){}updateUI();}
+function save(){try{localStorage.setItem('ctf-all-v1',JSON.stringify(stats));}catch(e){}}
 function switchPage(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');el.classList.add('active');}
 function selectCat(el){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');currentCat=el.dataset.cat;}
 function selectMode(el){document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');quizMode=el.dataset.mode;}
@@ -493,6 +708,7 @@ function getPool(cat){if(cat==='mixed'){let p=[];Object.values(Q).forEach(a=>p.p
 
 function startQuiz(){
   const pool=getPool(currentCat);
+  if(!pool.length){alert('该分类暂无题目');return;}
   const count=quizMode==='all'?pool.length:Math.min(parseInt(quizMode),pool.length);
   quizQuestions=shuffle([...pool]).slice(0,count);
   beginQuiz(false);
@@ -525,7 +741,10 @@ function renderQuestion(isDaily){
   let timerHtml=timerOn?`<div class="timer-bar show"><span style="font-size:12px;color:var(--text2)">⏱ 剩余</span><span class="time" id="timerDisplay">30</span></div>`:'';
   let html=timerHtml+`<div class="question-card"><div class="q-header"><span class="q-num">第 ${currentQ+1}/${quizQuestions.length} 题</span><span class="q-diff ${q.diff}">${q.diff==='easy'?'简单':q.diff==='medium'?'中等':'困难'}</span></div><div class="q-text">${q.q}</div><div class="q-options">`;
   q.opts.forEach((o,i)=>{html+=`<div class="q-opt" onclick="checkAnswer(${i})" id="opt-${i}"><span class="opt-letter">${letters[i]}</span><span>${o}</span></div>`;});
-  html+=`</div><div class="q-explain" id="q-explain"><b>解析：</b>${q.explain}</div><button class="next-btn" id="next-btn" onclick="nextQuestion(${isDaily})">下一题 →</button></div>`;
+  html+=`</div><div class="q-explain" id="q-explain"><b>解析：</b>${q.explain}</div>`;
+  html+=`<button class="ai-explain-btn" id="ai-explain-btn" onclick="aiExplainQuestion()">🤖 AI 深度解析</button>`;
+  html+=`<div class="ai-explain-box" id="ai-explain-box"></div>`;
+  html+=`<button class="next-btn" id="next-btn" onclick="nextQuestion(${isDaily})">下一题 →</button></div>`;
   document.getElementById('quiz-area').innerHTML=html;
   if(timerOn)startTimer();
 }
@@ -546,6 +765,7 @@ function timeUp(){
   stats.currentStreak=0;stats.total++;
   addWrong(q,-1);
   document.getElementById('q-explain').classList.add('show');
+  document.getElementById('ai-explain-btn').classList.add('show');
   document.getElementById('next-btn').classList.add('show');
   save();updateUI();
 }
@@ -567,6 +787,7 @@ function checkAnswer(idx){
   }
   stats.total++;
   document.getElementById('q-explain').classList.add('show');
+  document.getElementById('ai-explain-btn').classList.add('show');
   document.getElementById('next-btn').classList.add('show');
   save();updateUI();
 }
@@ -576,7 +797,7 @@ function nextQuestion(isDaily){currentQ++;renderQuestion(isDaily);}
 function showResult(isDaily){
   clearInterval(timerInterval);
   const pct=Math.round(score/quizQuestions.length*100);
-  const names={math:'数论',classical:'古典',rsa:'RSA',symmetric:'对称',hash:'哈希',ecc:'ECC',lattice:'格/杂项',mixed:'混合'};
+  const names={web:'Web',pwn:'Pwn',reverse:'逆向',misc:'Misc',math:'数论',classical:'古典',rsa:'RSA',symmetric:'对称',hash:'哈希',ecc:'ECC',lattice:'格/杂项',mixed:'混合'};
   stats.history.unshift({cat:names[currentCat]||'混合',score:`${score}/${quizQuestions.length}`,date:new Date().toLocaleDateString('zh-CN')});
   if(stats.history.length>50)stats.history.pop();
   if(isDaily)stats.dailyDone=new Date().toDateString();
@@ -612,6 +833,90 @@ function checkDaily(){
   if(stats.dailyDone===today){sub.textContent='今日已完成 ✓ 明天再来';btn.textContent='已完成';btn.style.opacity='.5';}
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// AI Functions
+async function callAI(messages){
+  const resp=await fetch(AI_CONFIG.baseUrl,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_CONFIG.apiKey},
+    body:JSON.stringify({model:AI_CONFIG.model,messages:messages,temperature:0.7,max_tokens:1500})
+  });
+  if(!resp.ok)throw new Error('API错误: '+resp.status);
+  const data=await resp.json();
+  return data.choices[0].message.content;
+}
+
+async function aiExplainQuestion(){
+  const q=quizQuestions[currentQ];
+  const btn=document.getElementById('ai-explain-btn');
+  const box=document.getElementById('ai-explain-box');
+  btn.textContent='🤖 AI 正在分析...';
+  btn.style.opacity='.6';
+  box.classList.add('show');
+  box.textContent='正在思考中...';
+  try{
+    const prompt=`请深度解析这道CTF题目：\n题目：${q.q.replace(/<[^>]*>/g,'')}\n选项：${q.opts.join(' / ')}\n正确答案：${q.opts[q.ans]}\n\n请从以下角度讲解：1.核心知识点 2.为什么其他选项错误 3.实际CTF中如何应用 4.相关工具/命令。简洁明了，200字以内。`;
+    const result=await callAI([{role:'system',content:'你是CTF教学助手，简洁实用地解析题目。'},{role:'user',content:prompt}]);
+    box.textContent=result;
+  }catch(e){
+    box.textContent='AI请求失败: '+e.message+'（请检查网络）';
+  }
+  btn.textContent='🤖 AI 深度解析';
+  btn.style.opacity='1';
+}
+
+function aiQuick(text){
+  document.getElementById('aiInput').value=text;
+  sendAiMsg();
+}
+
+async function sendAiMsg(){
+  if(aiLoading)return;
+  const input=document.getElementById('aiInput');
+  const text=input.value.trim();
+  if(!text)return;
+  input.value='';
+  input.style.height='auto';
+  const msgs=document.getElementById('aiMessages');
+  msgs.innerHTML+=`<div class="ai-msg user">${escapeHtml(text)}</div>`;
+  aiHistory.push({role:'user',content:text});
+  aiLoading=true;
+  document.getElementById('aiSendBtn').disabled=true;
+  document.getElementById('aiStatus').textContent='AI 正在思考...';
+  const typing=document.createElement('div');
+  typing.className='ai-msg bot typing';
+  typing.textContent='...';
+  msgs.appendChild(typing);
+  msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const result=await callAI(aiHistory.slice(-10));
+    typing.remove();
+    aiHistory.push({role:'assistant',content:result});
+    msgs.innerHTML+=`<div class="ai-msg bot">${formatAiText(result)}</div>`;
+  }catch(e){
+    typing.remove();
+    msgs.innerHTML+=`<div class="ai-msg bot">抱歉，请求失败: ${escapeHtml(e.message)}。请检查网络后重试。</div>`;
+  }
+  aiLoading=false;
+  document.getElementById('aiSendBtn').disabled=false;
+  document.getElementById('aiStatus').textContent='';
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function escapeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function formatAiText(t){
+  let s=escapeHtml(t);
+  s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+  s=s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+  return s;
+}
+
+// Auto-resize textarea
+document.getElementById('aiInput').addEventListener('input',function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,100)+'px';
+});
+
 load();renderCard();checkDaily();
 </script>
 </body>
